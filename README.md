@@ -1,2 +1,3 @@
 # Hashiwokakero
-Implemantation in C++ of the popular Game
+C++ implementation of Hashiwokakero
+following the C++ course of Prof.Dr.Hannah Bast, University Freiburg
