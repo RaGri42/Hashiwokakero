@@ -6,10 +6,10 @@
 #ifndef HASHI_H_
 #define HASHI_H_
 
+#include <ncurses.h>
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <ncurses.h>
 class Hashi {
  public:
   // Membervariablen
@@ -18,20 +18,17 @@ class Hashi {
   std::string _inputFileName;
   // neu
   std::unordered_map<int, std::vector<std::vector<int>>> _YIslands;
-  std::vector<int> _triple; 
-  std::vector<int> _bridge; 
+  std::vector<int> _triple;
+  std::vector<int> _bridge;
   std::unordered_map<int, std::vector<int>> _xislands;
   std::unordered_map<int, std::vector<int>> _yislands;
   std::unordered_map<int, std::vector<int>> _ybridges;
   std::unordered_map<int, std::vector<int>> _xbridges;
-  //Speichert das gesamte Spielfeld mit Brückenanzahl als key
+  // Speichert das gesamte Spielfeld mit Brückenanzahl als key
   std::unordered_map<int, std::vector<std::vector<int>>> _allIslands;
   std::unordered_map<int, std::vector<std::vector<int>>> _allXBridges;
-  
   std::unordered_map<int, std::vector<int>> _allXBridges2;
-  
   std::unordered_map<int, std::vector<std::vector<int>>> _allYBridges;
-
   std::vector<std::vector<int>> _alleWerte;
   // Memberfunktionen
   void initializeScreen();
