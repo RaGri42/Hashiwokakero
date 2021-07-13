@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-
+#include <ncurses.h>
 class Hashi {
  public:
   // Membervariablen
@@ -35,7 +35,7 @@ class Hashi {
   std::vector<std::vector<int>> _alleWerte;
   // Memberfunktionen
   void initializeScreen();
-  int processUserInput();
+  void processUserInput(int key);
   void printIslands();
   void printBridges();
   void printField();

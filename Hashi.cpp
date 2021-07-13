@@ -24,9 +24,25 @@ void Hashi::initializeScreen() {
   _maxY = LINES;
 }
 // ____________________________________________________________
-void Hashi::printField() {
+
+void Hashi::processUserInput(int key) {
+  MEVENT event;
+ switch (key) {
+   case KEY_MOUSE: 
+      if (getmouse(&event) == OK) {
+       if (event.bstate & BUTTON1_CLICKED) {
+          int lastClickedX = event.x;
+           int lastClickedY =  event.y;
+       mvprintw(12, 10, "%d,%d", lastClickedX, lastClickedY);
+            checkBridges(lastClickedX, lastClickedY);
+     }
+    }
+    break;
+    
+ }
+ return;
 }
-// ____________________________________________________________
+
 void Hashi::readFile() {
   _inputFileName = "i044-n009-s10x09.xy";
   std::ifstream file(_inputFileName.c_str());
@@ -188,13 +204,10 @@ void Hashi::checkBridges(int x, int y) {
 
   // Suche in den X-Brücken (momentan ist x fix) nach dem Wert 
   if (_allXBridges.count(x)>0) {
-     for(int j = 0; j < _allXBridges[x].size(); j++) {
+    mvprintw(20,10,"Ja man da ist das Ding!!"); 
+    for(int j = 0; j < _allXBridges[x].size(); j++) {
       for(int i = 0; i < _allXBridges[x][j].size()-1; i++) { 
         if(_allXBridges[x][j][i] == y) {
-        std::cout << "BRÜCKE HUECKE!" << std::endl;
-        std::cout << "y = " << y << std::endl;
-        std::cout << "j = " << j << std::endl;
-        std::cout << "i = " << i << std::endl;
         
        // ____________________________________________________________ 
       if (_allXBridges[x][j][_allXBridges[x][j].size()-1] < 2) { 

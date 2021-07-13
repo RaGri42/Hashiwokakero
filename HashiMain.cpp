@@ -116,11 +116,14 @@ for (auto& pair : game._YIslands) {
   
   game.initializeScreen();
 while (true) {
+ int key  = getch();
+ game.processUserInput(key);
+ // game.getBridges();
   game.printBridges();
   refresh();
   game.printIslands();
-  refresh();
-  }
+  refresh();  
+}
 endwin();
 
 
