@@ -15,12 +15,15 @@ int main(int argc, char** argv) {
   game.readFile();
   game.getBridges();
   game.checkBridges(9,4);
+  game.checkBridges(9,4);
   game.checkBridges(2,8);
+  game.checkBridges(8,8);
   game.checkBridges(8,8);
   game.checkBridges(5,0);
 
 // ____________________________________________________________
-std::cout << "alle X-Inseln" << std::endl;
+// Fuer Testzwecke
+  std::cout << "alle X-Inseln" << std::endl;
   for(auto& pair : game._xislands) {
       std::cout << "[" << pair.first << "]=";
     
@@ -93,7 +96,7 @@ for (auto& pair : game._YIslands) {
   // pair.second = std::vector<std::vector<int>>  
     for(auto& z : pair.second) { 
      std::cout << "{";   
-      for(int i = 0; i <= z.size() -1; i++) { 
+      for(size_t i = 0; i <= z.size() -1; i++) { 
      // std::cout <<"z.size()" << z.size()<< std::endl;
       std::cout  << z[i];
       std::cout << "  ";
@@ -110,17 +113,15 @@ for (auto& pair : game._YIslands) {
   }
   
 // ____________________________________________________________
-// ____________________________  
   
-//  game.initializeScreen();
-// while (true) {
-//  game.printBridges();
-//  refresh();
-//  game.printIslands();
-//  refresh();
-//  refresh();
-//  }
-//endwin();
+  game.initializeScreen();
+while (true) {
+  game.printBridges();
+  refresh();
+  game.printIslands();
+  refresh();
+  }
+endwin();
 
 
 }
