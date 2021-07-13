@@ -219,7 +219,7 @@ void Hashi::checkBridges(int x, int y) {
         if(_allYBridges[y][j][i] == x) {
         std::cout << " allYBridges[y][j][i]"<< _allYBridges[y][j][i] << std::endl; 
         std::cout << " allYBridges[y][j][i].end()"<< _allYBridges[y][j].back() << std::endl; 
-        std::cout << "BRÜCKE HUECKE!bei Y" << std::endl;
+        std::cout << "BRÜCKE HUECKE!jujubei Y" << std::endl;
         std::cout << "y = " << y << std::endl;
         std::cout << "j = " << j << std::endl;
         std::cout << "i = " << i << std::endl;
