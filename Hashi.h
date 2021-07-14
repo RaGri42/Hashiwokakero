@@ -13,8 +13,12 @@
 class Hashi {
  public:
   // Membervariablen
-  int _maxX;
-  int _maxY;
+  int _maxXFeld;
+  int _maxYFeld;
+  // NullPunkt X des Spiels relativ zur Mitte
+  int _NullX;
+  // NullPunkt Y des Spiels relativ zur Mitte
+  int _NullY;
   std::string _inputFileName;
   // neu
   std::unordered_map<int, std::vector<std::vector<int>>> _YIslands;
@@ -31,6 +35,7 @@ class Hashi {
   std::unordered_map<int, std::vector<std::vector<int>>> _allYBridges;
   std::vector<std::vector<int>> _alleWerte;
   // Memberfunktionen
+  void playGame();
   void initializeScreen();
   void processUserInput(int key);
   void printIslands();

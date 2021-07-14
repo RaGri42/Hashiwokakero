@@ -14,13 +14,13 @@ int main(int argc, char** argv) {
   Hashi game;
   game.readFile();
   game.getBridges();
-  game.checkBridges(9,4);
-  game.checkBridges(9,4);
-  game.checkBridges(2,8);
-  game.checkBridges(8,8);
-  game.checkBridges(8,8);
-  game.checkBridges(5,0);
-
+//  game.checkBridges(9,4);
+//  game.checkBridges(9,4);
+//  game.checkBridges(2,8);
+//  game.checkBridges(8,8);
+//  game.checkBridges(8,8);
+//  game.checkBridges(5,0);
+//
 // ____________________________________________________________
 // Fuer Testzwecke
   std::cout << "alle X-Inseln" << std::endl;
@@ -114,17 +114,6 @@ for (auto& pair : game._YIslands) {
   
 // ____________________________________________________________
   
-  game.initializeScreen();
-while (true) {
- int key  = getch();
- game.processUserInput(key);
- // game.getBridges();
-  game.printBridges();
-  refresh();
-  game.printIslands();
-  refresh();  
-}
-endwin();
-
+game.playGame();
 
 }
