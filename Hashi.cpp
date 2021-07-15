@@ -21,8 +21,10 @@ void Hashi::initializeScreen() {
   keypad(stdscr, true);
   mousemask(ALL_MOUSE_EVENTS, NULL);
 
-  _NullY = (LINES / 2) - (_maxYFeld / 2) ;
-  _NullX = (COLS / 2) - (_maxXFeld / 2);
+//_NullY = (LINES / 2) - (3 * (_maxYFeld / 2)) ;
+//_NullX = (COLS / 2) - (3 * (_maxXFeld / 2));
+  _NullY = 0;
+  _NullX = 0;
 }
 // ____________________________________________________________
 
@@ -37,7 +39,7 @@ void Hashi::processUserInput(int key) {
       if (event.bstate & BUTTON1_CLICKED) {
           int lastClickedX = event.x - _NullX;
           int lastClickedY = event.y - _NullY;
-       mvprintw(12, 10, "%d,%d", lastClickedX, lastClickedY);
+       mvprintw(12, 10, "%d,%d", lastClickedY, lastClickedX);
             checkBridges(lastClickedX, lastClickedY);
      }
     }
@@ -139,18 +141,18 @@ void Hashi::printIslands() {
   for (auto& pair : _YIslands) {
     for (auto& z : pair.second) {
       mvprintw (pair.first + _NullY , z[0] + _NullX , "%d" , z[1]);
-//   for (int dx = -1; dx <= 1; dx++) {
-//     for (int dy = -1; dy <= 1; dy++) {
-//       if (!(dx == 0 && dy ==0)) {
-//        attron(A_REVERSE);
-//         mvprintw((z[1] + dy), (z[0]  + dx), " ");
-//       }
-//       }
-//   }
-//  attroff(A_REVERSE);
-    //}
-  }
+//  for (int dx = -1; dx <= 1; dx++) {
+//    for (int dy = -1; dy <= 1; dy++) {
+//      if (!(dx == 0 && dy ==0)) {
+//       attron(A_REVERSE);
+//        mvprintw((pair.first + _NullY + dy), (z[0] +_NullX  + dx), " ");
+//      }
+//      }
+//  }
+ }
+//  }
 }
+attroff(A_REVERSE);
 }
 // ____________________________________________________________
 void Hashi::printBridges() {
@@ -247,6 +249,9 @@ void Hashi::playGame() {
   refresh();
   printIslands();
   refresh();
+  mvprintw(12, 20, "%d:%d", _NullY, _NullX);
+  mvprintw(13, 20, "%d:%d", COLS, LINES);
+  mvprintw(14, 20, "%d:%d", _maxYFeld, _maxXFeld);
 }
 endwin();
 }
