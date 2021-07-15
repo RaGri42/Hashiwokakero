@@ -11,6 +11,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <sstream>
+#include <deque>
 // ____________________________________________________________
 void Hashi::initializeScreen() {
   initscr();
@@ -38,10 +39,24 @@ void Hashi::initializeScreen() {
 
 void Hashi::processUserInput(int key) {
   MEVENT event;
+   std::deque<int> test;
   switch (key) {
     case 's':
-    mvprintw(15, 10, "Solver!");
+    mvprintw(15, 10, "Teste deque");
+     test.push_front(12);
+     test.push_front(13);
+     test.push_front(14);
+     test.push_front(15);
+     if(test.size() > 2) {
+       test.pop_back();
+     }
+     test.push_front(16);
+  for (size_t i = 0; i < test.size(); i++) {
+    mvprintw(16 + i, 12,"%d", test[i]);
+  }
+  undoMove();
     break;
+
     case KEY_MOUSE:
     if (getmouse(&event) == OK) {
       if (event.bstate & BUTTON1_CLICKED) {
@@ -204,11 +219,19 @@ void Hashi::checkBridges(int x, int y) {
       for (size_t i = 0; i < _allXBridges[x][j].size()-1; i++) {
         if (_allXBridges[x][j][i] == y) {
        int zustand; 
-    // erhöhe den Zustand der zugehörigen XInseln
+       std::vector<int> undoVec;
+       // erhöhe den Zustand der zugehörigen XInseln
     // y-Wert der Inse
   switch (_allXBridges[x][j][_allXBridges[x][j].size()-1]) {
     case 0:
       _allXBridges[x][j][_allXBridges[x][j].size()-1] = 1;
+      // für undoMove
+      undoVec = {0, x, j, 0}; 
+        if(_brueckenDeque.size() >= 5) {
+        _brueckenDeque.pop_back();
+        }
+        _brueckenDeque.push_front(undoVec);
+      
       zustand = 1;
       break;
     case 1:
@@ -269,6 +292,16 @@ void Hashi::changeStateIsland(int x, int y, int z) {
     }
   }
   } else { std::cout << " Bruecke nicht vorhanden!" << std::endl;}
+}
+// ____________________________________________________________
+void Hashi::undoMove() {
+  mvprintw(12, 32, "UndoMove"); 
+  for(auto& z : _brueckenDeque) {
+    for(int j=0; j <= z.size(); j++) {
+    mvprintw(14 + j,32, "%d",  z[j]); 
+    }
+  }
+refresh();
 }
 
 // ____________________________________________________________

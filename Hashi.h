@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <deque>
 class Hashi {
  public:
   // Membervariablen
@@ -34,6 +35,7 @@ class Hashi {
   std::unordered_map<int, std::vector<int>> _allXBridges2;
   std::unordered_map<int, std::vector<std::vector<int>>> _allYBridges;
   std::vector<std::vector<int>> _alleWerte;
+  std::deque<std::vector<int>> _brueckenDeque;
   // Memberfunktionen
   void playGame();
   void initializeScreen();
@@ -45,5 +47,6 @@ class Hashi {
   void getBridges();
   void checkBridges(int x, int y);
   void changeStateIsland(int x, int y, int z);
+  void undoMove();
 };
 #endif  //  HASHI_H_
