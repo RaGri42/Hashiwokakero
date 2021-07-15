@@ -17,6 +17,14 @@ void Hashi::initializeScreen() {
   cbreak();
   noecho();
   curs_set(false);
+  if (has_colors() == TRUE) {
+    start_color();  //  Farben
+    init_pair(0, COLOR_WHITE, COLOR_BLACK);
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+    clear();
+    attron(COLOR_PAIR(0));
+    }
   nodelay(stdscr, true);
   keypad(stdscr, true);
   mousemask(ALL_MOUSE_EVENTS, NULL);
@@ -39,7 +47,7 @@ void Hashi::processUserInput(int key) {
       if (event.bstate & BUTTON1_CLICKED) {
           int lastClickedX = event.x - _NullX;
           int lastClickedY = event.y - _NullY;
-       mvprintw(12, 10, "%d,%d", lastClickedY, lastClickedX);
+//       mvprintw(12, 10, "%d,%d", lastClickedY, lastClickedX);
             checkBridges(lastClickedX, lastClickedY);
      }
     }
@@ -140,8 +148,15 @@ void Hashi::printIslands() {
   // gib Inselkoordinaten zu Häufigkeiten aus
   for (auto& pair : _YIslands) {
     for (auto& z : pair.second) {
+      int color = 0;
+      if(z[1] - z[2] == 0) { color = 1; }
+      else if(z[1] - z[2] < 0) { color = 2; }
+      else { color = 0; }
+      attron(COLOR_PAIR(color)); 
       mvprintw (pair.first + _NullY , z[0] + _NullX , "%d" , z[1]);
-//  for (int dx = -1; dx <= 1; dx++) {
+      attroff(COLOR_PAIR(color));
+      
+      //  for (int dx = -1; dx <= 1; dx++) {
 //    for (int dy = -1; dy <= 1; dy++) {
 //      if (!(dx == 0 && dy ==0)) {
 //       attron(A_REVERSE);
@@ -152,7 +167,7 @@ void Hashi::printIslands() {
  }
 //  }
 }
-attroff(A_REVERSE);
+//attroff(A_REVERSE);
 }
 // ____________________________________________________________
 void Hashi::printBridges() {
@@ -185,22 +200,31 @@ void Hashi::printBridges() {
 void Hashi::checkBridges(int x, int y) {
   // Suche in den X-Brücken (momentan ist x fix) nach dem Wert
   if (_allXBridges.count(x) > 0) {
-    mvprintw(20, 10, "Ja man da ist das Ding!!");
     for (size_t j = 0; j < _allXBridges[x].size(); j++) {
       for (size_t i = 0; i < _allXBridges[x][j].size()-1; i++) {
         if (_allXBridges[x][j][i] == y) {
-  // ____________________________________________________________
-  if (_allXBridges[x][j][_allXBridges[x][j].size()-1] < 2) {
-  // erhöhe den Zustand der Brücke wenn < 2, sonst setze 0
-        _allXBridges[x][j][_allXBridges[x][j].size() - 1]++;
-      } else {_allXBridges[x][j][_allXBridges[x][j].size()-1] = 0;}
-  // erhöhe den Zustand der zugehörigen XInseln
-  // y-Wert der Inse
+       int zustand; 
+    // erhöhe den Zustand der zugehörigen XInseln
+    // y-Wert der Inse
+  switch (_allXBridges[x][j][_allXBridges[x][j].size()-1]) {
+    case 0:
+      _allXBridges[x][j][_allXBridges[x][j].size()-1] = 1;
+      zustand = 1;
+      break;
+    case 1:
+      _allXBridges[x][j][_allXBridges[x][j].size()-1] = 2;
+      zustand = 1;
+      break;
+    case 2:
+      _allXBridges[x][j][_allXBridges[x][j].size()-1] = 0;
+      zustand = -2;
+      break;
+  }
+
         int yInselOben = _allXBridges[x][j][0] - 1;
         int yInselUnten = _allXBridges[x][j][_allXBridges[x][j].size()-2] + 1;
-        int z = _allXBridges[x][j][_allXBridges[x][j].size()-1];
-        changeStateIsland(x, yInselOben, z);
-        changeStateIsland(x, yInselUnten, z);
+        changeStateIsland(x, yInselOben, zustand);
+        changeStateIsland(x, yInselUnten, zustand);
   // ____________________________________________________________
         }
         }
@@ -209,19 +233,27 @@ void Hashi::checkBridges(int x, int y) {
     for (size_t j = 0; j < _allYBridges[y].size(); j++) {
       for (size_t i = 0; i < _allYBridges[y][j].size()-1; i++) {
         if (_allYBridges[y][j][i] == x) {
-        // ____________________________________________________________
-      if (_allYBridges[y][j][_allYBridges[y][j].size()-1] < 2) {
-      // erhöhe den Zustand der Brücke wenn < 2, sonst setze 0
-        _allYBridges[y][j][_allYBridges[y][j].size()-1]++;
-      } else {_allYBridges[y][j][_allYBridges[y][j].size()-1] = 0;}
-      // erhöhe den Zustand der zugehörigen XInseln
-      // y-Wert der Inse
+      int zustand;
+          // ____________________________________________________________
+  switch (_allYBridges[y][j][_allYBridges[y][j].size()-1]) {
+    case 0:
+      _allYBridges[y][j][_allYBridges[y][j].size()-1] = 1;
+      zustand = 1;
+      break;
+    case 1:
+       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 2;
+      zustand = 1;
+      break;
+    case 2:
+      _allYBridges[y][j][_allYBridges[y][j].size()-1] = 0;
+      zustand = -2;
+      break;
+  }
+
         int xInsellinks = _allYBridges[y][j][0] - 1;
         int xInselrechts = _allYBridges[y][j][_allYBridges[y][j].size()-2] + 1;
-        int z = _allYBridges[y][j][_allYBridges[y][j].size() - 1];
-        changeStateIsland(xInsellinks, y, z);
-        changeStateIsland(xInselrechts, y, z);
-      // ____________________________________________________________
+        changeStateIsland(xInsellinks, y, zustand);
+        changeStateIsland(xInselrechts, y, zustand);
         }
         }
         }
@@ -233,6 +265,7 @@ void Hashi::changeStateIsland(int x, int y, int z) {
   for (size_t j = 0; j < _YIslands[y].size(); j++) {
     if (_YIslands[y][j][0] == x) {
       _YIslands[y][j][2] += z;
+  //  mvprintw(22,16, "Zustand der Insel %d"   ,_YIslands[y][j][2]);
     }
   }
   } else { std::cout << " Bruecke nicht vorhanden!" << std::endl;}
@@ -246,12 +279,11 @@ void Hashi::playGame() {
   int key  = getch();
   processUserInput(key);
   printBridges();
-  refresh();
   printIslands();
   refresh();
-  mvprintw(12, 20, "%d:%d", _NullY, _NullX);
-  mvprintw(13, 20, "%d:%d", COLS, LINES);
-  mvprintw(14, 20, "%d:%d", _maxYFeld, _maxXFeld);
+//  mvprintw(12, 20, "%d:%d", _NullY, _NullX);
+//  mvprintw(13, 20, "%d:%d", COLS, LINES);
+//  mvprintw(14, 20, "%d:%d", _maxYFeld, _maxXFeld);
 }
 endwin();
 }
