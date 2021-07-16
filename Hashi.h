@@ -25,6 +25,8 @@ class Hashi {
   std::unordered_map<int, std::vector<std::vector<int>>> _YIslands;
   std::vector<int> _triple;
   std::vector<int> _bridge;
+  std::vector<int> _undoVec;
+  std::vector<std::vector<int>> _returnVec;
   std::unordered_map<int, std::vector<int>> _xislands;
   std::unordered_map<int, std::vector<int>> _yislands;
   std::unordered_map<int, std::vector<int>> _ybridges;

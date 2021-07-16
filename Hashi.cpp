@@ -34,6 +34,13 @@ void Hashi::initializeScreen() {
 //_NullX = (COLS / 2) - (3 * (_maxXFeld / 2));
   _NullY = 0;
   _NullX = 0;
+  _brueckenDeque.resize(4);
+  std::vector<int> initVec = { 33, 33, 33, 33 };
+  _brueckenDeque.push_front(initVec);
+  _brueckenDeque.push_front(initVec);
+  _brueckenDeque.push_front(initVec);
+  _brueckenDeque.push_front(initVec);
+
 }
 // ____________________________________________________________
 
@@ -51,10 +58,12 @@ void Hashi::processUserInput(int key) {
        test.pop_back();
      }
      test.push_front(16);
-  for (size_t i = 0; i < test.size(); i++) {
+    for (size_t i = 0; i < test.size(); i++) {
     mvprintw(16 + i, 12,"%d", test[i]);
-  }
-  undoMove();
+    }
+    break;
+    case 'u':
+    undoMove();
     break;
 
     case KEY_MOUSE:
@@ -219,31 +228,32 @@ void Hashi::checkBridges(int x, int y) {
       for (size_t i = 0; i < _allXBridges[x][j].size()-1; i++) {
         if (_allXBridges[x][j][i] == y) {
        int zustand; 
-       std::vector<int> undoVec;
        // erhöhe den Zustand der zugehörigen XInseln
     // y-Wert der Inse
   switch (_allXBridges[x][j][_allXBridges[x][j].size()-1]) {
     case 0:
       _allXBridges[x][j][_allXBridges[x][j].size()-1] = 1;
       // für undoMove
-      undoVec = {0, x, j, 0}; 
-        if(_brueckenDeque.size() >= 5) {
-        _brueckenDeque.pop_back();
-        }
-        _brueckenDeque.push_front(undoVec);
+      _undoVec = {0, x, j, 0}; 
       
       zustand = 1;
       break;
     case 1:
       _allXBridges[x][j][_allXBridges[x][j].size()-1] = 2;
+      _undoVec = {0, x, j, 1}; 
       zustand = 1;
       break;
     case 2:
       _allXBridges[x][j][_allXBridges[x][j].size()-1] = 0;
+      _undoVec = {0, x, j, 2}; 
       zustand = -2;
       break;
   }
 
+        
+      _brueckenDeque.push_front(_undoVec);
+      _brueckenDeque.pop_back();
+        _undoVec.clear();
         int yInselOben = _allXBridges[x][j][0] - 1;
         int yInselUnten = _allXBridges[x][j][_allXBridges[x][j].size()-2] + 1;
         changeStateIsland(x, yInselOben, zustand);
@@ -261,18 +271,24 @@ void Hashi::checkBridges(int x, int y) {
   switch (_allYBridges[y][j][_allYBridges[y][j].size()-1]) {
     case 0:
       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 1;
+      _undoVec = {1, y, j, 0}; 
       zustand = 1;
       break;
     case 1:
        _allYBridges[y][j][_allYBridges[y][j].size()-1] = 2;
+      _undoVec = {1, y, j, 1}; 
       zustand = 1;
       break;
     case 2:
       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 0;
+      _undoVec = {1, y, j, 2}; 
       zustand = -2;
       break;
   }
 
+      _brueckenDeque.push_front(_undoVec);
+      _brueckenDeque.pop_back();
+        _undoVec.clear();
         int xInsellinks = _allYBridges[y][j][0] - 1;
         int xInselrechts = _allYBridges[y][j][_allYBridges[y][j].size()-2] + 1;
         changeStateIsland(xInsellinks, y, zustand);
@@ -293,15 +309,37 @@ void Hashi::changeStateIsland(int x, int y, int z) {
   }
   } else { std::cout << " Bruecke nicht vorhanden!" << std::endl;}
 }
+
 // ____________________________________________________________
 void Hashi::undoMove() {
-  mvprintw(12, 32, "UndoMove"); 
-  for(auto& z : _brueckenDeque) {
-    for(int j=0; j <= z.size(); j++) {
-    mvprintw(14 + j,32, "%d",  z[j]); 
-    }
+  std::vector<int> nullVec = { 33, 33, 33, 33 };
+  
+  std::vector<int> v = _brueckenDeque.at(0);
+  if(v.at(0) == 33) {
+  mvprintw(8,20, "kein Undo Move mehr uebrig!");
+  return;
   }
-refresh();
+
+  for(int i = 0; i < v.size(); i++) {
+    mvprintw(10,20 + 3*i, "%d", v.at(i));
+  }
+
+  if(v.at(0) == 0) {
+      // setzte X-Bruecken zurueck auf undoVector Werte
+      _allXBridges[v[1]][v[2]][_allXBridges[v[1]][v[2]].size()-1] = v[3];
+   //     int yInselOben = _allXBridges[v[1]][v[2]][0] - 1;
+   //     int yInselUnten = _allXBridges[v[1]][v[2]][_allXBridges[v[1]][v[2]].size()-2] + 1;
+   //     changeStateIsland(v[1], yInselOben, v[3]);
+   //     changeStateIsland(v[1], yInselUnten, v[3]);
+   //   
+      // entfernt den letzten UndoSchritt aus undoCache
+    }
+    if(v.at(0) == 1) {
+      // setzte Y-Bruecken zurueck auf undoVector Werte
+      _allYBridges[v[1]][v[2]][_allYBridges[v[1]][v[2]].size()-1] = v[3];
+    }
+_brueckenDeque.pop_front();
+_brueckenDeque.push_back(nullVec);
 }
 
 // ____________________________________________________________
