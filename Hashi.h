@@ -38,6 +38,9 @@ class Hashi {
   std::unordered_map<int, std::vector<std::vector<int>>> _allYBridges;
   std::vector<std::vector<int>> _alleWerte;
   std::deque<std::vector<int>> _brueckenDeque;
+  std::deque<std::vector<int>> _inselDeque1;
+  std::deque<std::vector<int>> _inselDeque2;
+  std::vector<int> _undoVecIsland;
   // Memberfunktionen
   void playGame();
   void initializeScreen();
@@ -48,7 +51,8 @@ class Hashi {
   void readFile();
   void getBridges();
   void checkBridges(int x, int y);
-  void changeStateIsland(int x, int y, int z);
+  void changeStateIsland(int x, int y, int z );
+  void setUndoCache(int x, int y, int step);
   void undoMove();
 };
 #endif  //  HASHI_H_
