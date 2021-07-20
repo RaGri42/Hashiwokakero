@@ -104,10 +104,7 @@ void Hashi::processUserInput(int key) {
   switch (key) {
     case 's':
     mvprintw(15, 10, "Loesen");
-     
-    for (size_t i = 0; i < test.size(); i++) {
-    mvprintw(16 + i, 12,"%d", test[i]);
-    }
+    checkSolution(); 
     break;
     
     case 'u':
@@ -156,6 +153,9 @@ void Hashi::readFile() {
   }
 
 
+ 
+  
+  
   std::string line;
   // erste Zeile hier steht die Feldgrösse drin
   std::getline(file, line);
@@ -515,6 +515,30 @@ void Hashi::changeStateIsland(int x, int y, int z ) {
 ////      _inselDeque2.pop_front();
 ////      _inselDeque2.push_back(nullVec1);
 //}
+void Hashi::checkSolution() {
+  int sum = 0;
+  int o = 0;
+  for (auto& pair : _YIslands) {
+   for (auto& islands : pair.second) {
+     std::vector<int> zu = islands;
+     o++;
+    mvprintw(2 + o, 18, "%d", zu[2] - zu[1]);
+    sum += (zu[2] - zu[1]);
+mvprintw(5,12,"%d",sum);
+   }
+}
+
+if (sum == 0) {
+    mvprintw(20, 12 , "HURRA SPIEL GELOEST!");
+}
+else { mvprintw(20, 12 , "BLOEEEEKKKKKKK");
+}
+}
+
+
+
+
+
 // ____________________________________________________________
 void Hashi::playGame() {
   

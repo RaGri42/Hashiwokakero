@@ -58,5 +58,6 @@ class Hashi {
   void changeStateIsland(int x, int y, int z );
   void setUndoCache(int x, int y, int zustand, int step);
   void undoMove();
+  void checkSolution();
 };
 #endif  //  HASHI_H_
