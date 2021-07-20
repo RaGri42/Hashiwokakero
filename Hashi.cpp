@@ -35,15 +35,13 @@ void Hashi::initializeScreen() {
   _NullY = 0;
   _NullX = 0;
   _brueckenDeque.resize(4);
-  _inselDeque1.resize(4);
   std::vector<int> initVec = { 33, 33, 33, 33 };
   _brueckenDeque.push_front(initVec);
-  _inselDeque1.push_front(initVec);
-  _inselDeque2.push_front(initVec);
-//  _brueckenDeque.push_front(initVec);
-//  _brueckenDeque.push_front(initVec);
-//  _brueckenDeque.push_front(initVec);
-//
+  
+   std::vector<int> initVec2 = { 33, 33, 33};
+  _inselDeque1.resize(3);
+  _inselDeque1.push_front(initVec2);
+  _inselDeque2.push_front(initVec2);
 }
 // ____________________________________________________________
 
@@ -66,7 +64,7 @@ void Hashi::processUserInput(int key) {
     }
     break;
     case 'u':
-    undoMove();
+    //undoMove();
     break;
 
     case KEY_MOUSE:
@@ -230,7 +228,8 @@ void Hashi::checkBridges(int x, int y) {
     for (size_t j = 0; j < _allXBridges[x].size(); j++) {
       for (size_t i = 0; i < _allXBridges[x][j].size()-1; i++) {
         if (_allXBridges[x][j][i] == y) {
-       int zustand; 
+       int undoZustand;
+       int zustand;
        // erhöhe den Zustand der zugehörigen XInseln
     // y-Wert der Inse
   switch (_allXBridges[x][j][_allXBridges[x][j].size()-1]) {
@@ -238,29 +237,34 @@ void Hashi::checkBridges(int x, int y) {
       _allXBridges[x][j][_allXBridges[x][j].size()-1] = 1;
       // für undoMove
       _undoVec = {0, x, j, 0}; 
-      
       zustand = 1;
+      undoZustand = -1;
       break;
     case 1:
       _allXBridges[x][j][_allXBridges[x][j].size()-1] = 2;
       _undoVec = {0, x, j, 1}; 
       zustand = 1;
+      undoZustand = -1;
       break;
     case 2:
       _allXBridges[x][j][_allXBridges[x][j].size()-1] = 0;
       _undoVec = {0, x, j, 2}; 
       zustand = -2;
+      undoZustand = 2;
       break;
   }
 
         
       _brueckenDeque.push_front(_undoVec);
       _brueckenDeque.pop_back();
-        _undoVec.clear();
+      _undoVec.clear();
+        
         int yInselOben = _allXBridges[x][j][0] - 1;
         int yInselUnten = _allXBridges[x][j][_allXBridges[x][j].size()-2] + 1;
         changeStateIsland(x, yInselOben, zustand);
+    //    setUndoCache(x, yInselOben, undoZustand, 0);
         changeStateIsland(x, yInselUnten, zustand);
+    //    setUndoCache(x, yInselUnten, undoZustand, 1);
   // ____________________________________________________________
         }
         }
@@ -270,22 +274,25 @@ void Hashi::checkBridges(int x, int y) {
       for (size_t i = 0; i < _allYBridges[y][j].size()-1; i++) {
         if (_allYBridges[y][j][i] == x) {
       int zustand;
-      int zustandAlt;
+      int undoZustand;
           // ____________________________________________________________
   switch (_allYBridges[y][j][_allYBridges[y][j].size()-1]) {
     case 0:
       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 1;
       _undoVec = {1, y, j, 0};
+      undoZustand = -1;
       zustand = 1;
       break;
     case 1:
        _allYBridges[y][j][_allYBridges[y][j].size()-1] = 2;
       _undoVec = {1, y, j, 1}; 
+      undoZustand = -1;
       zustand = 1;
       break;
     case 2:
       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 0;
       _undoVec = {1, y, j, 2}; 
+      undoZustand = 2;
       zustand = -2;
       break;
   }
@@ -295,11 +302,12 @@ void Hashi::checkBridges(int x, int y) {
         _undoVec.clear();
         int xInsellinks = _allYBridges[y][j][0] - 1;
         int xInselrechts = _allYBridges[y][j][_allYBridges[y][j].size()-2] + 1;
-        setUndoCache(xInsellinks, y, 0);
-        changeStateIsland(xInsellinks, y, zustand);
         
-        setUndoCache(xInselrechts, y, 1);
+        changeStateIsland(xInsellinks, y, zustand);
+  //      setUndoCache(xInsellinks, y, undoZustand, 0);
+        
         changeStateIsland(xInselrechts, y, zustand );
+//        setUndoCache(xInselrechts, y, undoZustand, 1);
         }
         }
         }
@@ -310,7 +318,7 @@ void Hashi::changeStateIsland(int x, int y, int z ) {
   if (_YIslands.count(y) > 0) {
   for (size_t j = 0; j < _YIslands[y].size(); j++) {
     if (_YIslands[y][j][0] == x) {
-
+      
       _YIslands[y][j][2] += z;
   //  mvprintw(22,16, "Zustand der Insel %d"   ,_YIslands[y][j][2]);
     }
@@ -319,87 +327,72 @@ void Hashi::changeStateIsland(int x, int y, int z ) {
 }
 
 // ____________________________________________________________
-void Hashi::setUndoCache(int x, int y, int step) {
-  int zustandAlt;
-  if (_YIslands.count(y) > 0) {
-  for (size_t j = 0; j < _YIslands[y].size(); j++) {
-    if (_YIslands[y][j][0] == x) {
-      
-      if (step == 0) {
-      zustandAlt = _YIslands[y][j][2];
-      _undoVecIsland = { y, x, zustandAlt };
-      _inselDeque1.push_front(_undoVecIsland);
-      _inselDeque1.pop_back();
-      _undoVecIsland.clear();
-      }
-      if (step == 1) {
-      zustandAlt = _YIslands[y][j][2];
-      _undoVecIsland = { y, x, zustandAlt };
-      _inselDeque2.push_front(_undoVecIsland);
-      _inselDeque2.pop_back();
-      _undoVecIsland.clear();
-      }
-}
-}
-}
-}
-// ____________________________________________________________
-void Hashi::undoMove() {
-  
-  if(_brueckenDeque.empty() || _brueckenDeque[0][0] == 33) {
-  mvprintw(8,20, "kein Undo Move mehr uebrig!");
-  return;
-  }
-  std::vector<int> nullVec = { 33, 33, 33, 33 };
-  std::vector<int> nullVec1 = { 33, 33, 33 };
-  
-  std::vector<int> v = _brueckenDeque.at(0);
-  std::vector<int> v1 = _inselDeque1.at(0);
-  std::vector<int> v2 = _inselDeque2.at(0);
-//  for(int i = 0; i < v.size(); i++) {
-//    mvprintw(10,20 + 3*i, "%d", v.at(i));
-//    mvprintw(11, 20 + 4*i, "%d", v1.at(i));
-//    mvprintw(12, 20, "Alt y[%d] = {%d, %d, %d}", v1.at(0), 
-//        v1.at(1), v1.at(2), v1.at(3));
+//void Hashi::setUndoCache(int x, int y, int z, int step) {
+//      
+//      if (step == 0) {
+//      _undoVecIsland = { x, y, z };
+//      _inselDeque1.push_front(_undoVecIsland);
+//      _inselDeque1.pop_back();
+//      _undoVecIsland.clear();
+//      }
+//      if (step == 1) {
+//      _undoVecIsland = { x, y, z };
+//      _inselDeque2.push_front(_undoVecIsland);
+//      _inselDeque2.pop_back();
+//      _undoVecIsland.clear();
+//      }
+//}
+//  
+//// ____________________________________________________________
+//void Hashi::undoMove() {
+//  
+//  std::vector<int> v = _brueckenDeque.at(0);
+//  std::vector<int> v1;
+//  std::vector<int> v2;
+//    v1 = _inselDeque1.at(0);
+//    v2 = _inselDeque2.at(0);
+//  std::vector<int> nullVec = { 33, 33, 33, 33 };
+//  std::vector<int> nullVec1 = { 33, 33, 33 };
 //
+//  if(_brueckenDeque.empty() || _brueckenDeque[0][0] == 33) {
+//  mvprintw(8,20, "kein Undo Move mehr uebrig!");
+//  return;
 //  }
-
-  if(v.at(0) == 0) {
-      // setzte X-Bruecken zurueck auf undoVector Werte
-      _allXBridges[v[1]][v[2]][_allXBridges[v[1]][v[2]].size()-1] = v[3];
-     //YIslands[v1[0]][v1[1]][2] = v1[2];
-   //     int yInselOben = _allXBridges[v[1]][v[2]][0] - 1;
-   //     int yInselUnten = _allXBridges[v[1]][v[2]][_allXBridges[v[1]][v[2]].size()-2] + 1;
-   //     changeStateIsland(v[1], yInselOben, v[3]);
-   //     changeStateIsland(v[1], yInselUnten, v[3]);
-   //   
-      // entfernt den letzten UndoSchritt aus undoCache
-    }
-    if(v.at(0) == 1) {
-      // setzte Y-Bruecken zurueck auf undoVector Werte
-      _allYBridges[v[1]][v[2]][_allYBridges[v[1]][v[2]].size()-1] = v[3];
-  
-      v1 = _inselDeque1.at(0);
-      v2 = _inselDeque2.at(0);
-
-      if (_YIslands.count(v1[0]) > 0) {
-      for (size_t j = 0; j < _YIslands[v1[0]].size(); j++) {
-      if (_YIslands[v1[0]][j][0] == v1[1]) {
-      
-      _YIslands[v1[0]][j][2] = v1[2];
-      _YIslands[v2[0]][j][2] = v2[2];
-      printIslands();
-    }
-      }
-      }
-}
-     _brueckenDeque.pop_front();
-    _brueckenDeque.push_back(nullVec);
-    _inselDeque1.pop_front();
-    _inselDeque1.push_back(nullVec1);
-    _inselDeque2.pop_front();
-    _inselDeque2.push_back(nullVec1);
-}
+//  
+//
+//  if(v.at(0) == 0) {
+//      // setzte X-Bruecken zurueck auf undoVector Werte
+//      _allXBridges[v[1]][v[2]][_allXBridges[v[1]][v[2]].size()-1] = v[3];
+//      // check die Brucken mit x   y und altem Zustand     
+//       changeStateIsland(v1[0], v1[1], v1[2]);
+//       changeStateIsland(v2[0], v2[1], v2[2]);
+//  
+//  }
+//    if(v.at(0) == 1) {
+//      // setzte Y-Bruecken zurueck auf undoVector Werte
+//      _allYBridges[v[1]][v[2]][_allYBridges[v[1]][v[2]].size()-1] = v[3];
+//       changeStateIsland(v1[0], v1[1], v1[2]);
+//       changeStateIsland(v2[0], v2[1], v2[2]);
+//     }
+//      
+//      
+//      
+// //     _YIslands[v1[0]][v1[1]][2] = v1[2];
+// //      mvprintw(14,12,"_YIslands[v1[0]][v1[1]][2] = %d",_YIslands[v1[0]][v1[1]][2] = v1[2]);
+//      
+// //     _YIslands[v2[0]][v1[1]][2] = v2[2];
+// //     mvprintw(14,12,"_YIslands[v2[0]][v2[1]][2] = %d",_YIslands[v2[0]][v2[1]][2] = v2[2]);
+// //printBridges();
+//
+//     _brueckenDeque.pop_front();
+//    _brueckenDeque.push_back(nullVec);
+//    
+////      _inselDeque1.pop_front();
+////      _inselDeque1.push_back(nullVec1);
+//////    
+////      _inselDeque2.pop_front();
+////      _inselDeque2.push_back(nullVec1);
+//}
 // ____________________________________________________________
 void Hashi::playGame() {
   

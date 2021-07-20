@@ -52,7 +52,7 @@ class Hashi {
   void getBridges();
   void checkBridges(int x, int y);
   void changeStateIsland(int x, int y, int z );
-  void setUndoCache(int x, int y, int step);
+  void setUndoCache(int x, int y, int zustand, int step);
   void undoMove();
 };
 #endif  //  HASHI_H_
