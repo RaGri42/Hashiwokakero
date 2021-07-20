@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
 // ____________________________________________________________ 
   
   Hashi game;
+  game.parseCommandLineArguments(argc, argv);
   game.readFile();
   game.getBridges();
 //  game.checkBridges(9,4);

@@ -4,6 +4,7 @@
 
 #include "./Hashi.h"
 #include <ncurses.h>
+#include <getopt.h>
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -12,7 +13,59 @@
 #include <unordered_map>
 #include <sstream>
 #include <deque>
+
 // ____________________________________________________________
+/* Funktion um Programm zu starten
+ * Ein Inputfile im Format *.xy muss angegeben werden
+ * Anzahl von Undoschritten kann festgelegt werden
+*/
+//
+
+void Hashi::parseCommandLineArguments(int argc, char** argv) {
+struct option options[] = {
+  {"undo-steps", 1, NULL, 'u'},
+  {NULL, 0, NULL, 0}
+ };
+  optind = 1;
+  
+  // default
+  _undoSteps = 5;
+  _fileName = "";
+
+  while (true) {
+    char c = getopt_long(argc, argv, "u:", options, NULL);
+      if (c == -1) { break; }
+      switch (c) {
+        case 'u':
+          _undoSteps = atof(optarg);
+          break;
+        case '?':
+        default:
+          std::cout << "bloek" << std::endl;
+      }
+  }
+  if (optind + 1 != argc) {
+    printUsageAndExit();
+    exit(1);
+  }
+  _fileName = argv[optind];
+
+}
+// ____________________________________________________________
+/* Funktion gibt Fehlemeldung aus, wenn Programm mit falschen Parametern
+ * aufgerufen wurde
+*/
+// ____________________________________________________________
+
+void Hashi::printUsageAndExit() const {
+  std::cerr << "Usage ./HashiMain [options] <inputfile>" << std::endl;
+
+}
+// ____________________________________________________________
+/* Screen initialisieren für ncurses
+*/
+// ____________________________________________________________
+
 void Hashi::initializeScreen() {
   initscr();
   cbreak();
@@ -30,10 +83,10 @@ void Hashi::initializeScreen() {
   keypad(stdscr, true);
   mousemask(ALL_MOUSE_EVENTS, NULL);
 
-//_NullY = (LINES / 2) - (3 * (_maxYFeld / 2)) ;
-//_NullX = (COLS / 2) - (3 * (_maxXFeld / 2));
   _NullY = 0;
   _NullX = 0;
+  
+  // Deques für die undo Funktion
   _brueckenDeque.resize(4);
   std::vector<int> initVec = { 33, 33, 33, 33 };
   _brueckenDeque.push_front(initVec);
@@ -50,19 +103,13 @@ void Hashi::processUserInput(int key) {
    std::deque<int> test;
   switch (key) {
     case 's':
-    mvprintw(15, 10, "Teste deque");
-     test.push_front(12);
-     test.push_front(13);
-     test.push_front(14);
-     test.push_front(15);
-     if(test.size() > 2) {
-       test.pop_back();
-     }
-     test.push_front(16);
+    mvprintw(15, 10, "Loesen");
+     
     for (size_t i = 0; i < test.size(); i++) {
     mvprintw(16 + i, 12,"%d", test[i]);
     }
     break;
+    
     case 'u':
     //undoMove();
     break;
@@ -81,19 +128,42 @@ void Hashi::processUserInput(int key) {
   return;
 }
 // ____________________________________________________________
+/* File einlesen wie in Kommandozeile angegeben
+ */
+// ____________________________________________________________
+
 void Hashi::readFile() {
-  _inputFileName = "i044-n009-s10x09.xy";
-  std::ifstream file(_inputFileName.c_str());
+ // _fileName = "i044-n009-s10x09.xy";
+ 
+  std::size_t found = _fileName.find("xy");
+  int einleseCode;
+  if (found != std::string::npos) {
+    einleseCode = 0;
+  }
+  
+  found = _fileName.find("plain");
+  if (found != std::string::npos) {
+    einleseCode = 1;
+  }
+
+
+
+ 
+  std::ifstream file(_fileName.c_str());
   if (!file.is_open()) {
-    std::cerr << "Can't open file!"<< _inputFileName << std::endl;
+    std::cerr << "Can't open file!"<< _fileName << std::endl;
     exit(1);
   }
+
+
   std::string line;
   // erste Zeile hier steht die Feldgrösse drin
   std::getline(file, line);
   size_t linecount = 0;
   std::vector<int> xyVektor;
   xyVektor.resize(2);
+  
+  if (einleseCode == 0) {
   while (true) {
     if (file.eof()) { break; }
     // erste Zeile? Lese Feld Koordinaten aus
@@ -106,6 +176,7 @@ void Hashi::readFile() {
       linecount++;
     }
     std::getline(file, line);
+    
     size_t pos1 = line.find(",");
     size_t pos2 = line.find(",", pos1 + 1);
     std::string s1 = line.substr(0, pos1);
@@ -129,6 +200,57 @@ void Hashi::readFile() {
     xyVektor = {x, y};
     // _alleWerte.push_back(xyVector);
     _allIslands[b].push_back(xyVektor);
+}
+}
+
+
+if(einleseCode == 1) {
+    std::cout << "plain-Datei!" << std::endl;
+  
+    int x;
+    int y;
+    int b; 
+ int yline = 0;
+ while (true) {
+    
+    if (file.eof()) { break; }
+    
+    // erste Zeile? Lese Feld Koordinaten aus
+    if (linecount == 0) {
+      size_t pos0 = line.find(":");
+      std::string s0 = line.substr(1, pos0-1);
+      std::string s01 = line.substr(pos0 + 1, 2);
+      _maxXFeld = atoi(s0.c_str());
+      _maxYFeld = atoi(s01.c_str());
+      linecount++;
+    }
+    std::getline(file, line);
+    for(int i = 0; i < line.length(); ++i) {
+      if (line.at(i) !=' ') {  
+      char wert = line.at(i);
+      x = i;
+      y = yline;
+      b = wert - 48;
+      
+    
+    // Test ob letzte Zeile eingelesen wurde
+   // if (x == 0 && y == 0 && b == 0) { break; }
+    // Werte in eine unordererd Map einlesen
+    // x und y als key
+    _xislands[x].push_back(y);
+    _yislands[y].push_back(x);
+    // Triple x, b, z für y-Inseln
+    _triple = {x , b , 0};
+    _YIslands[y].push_back(_triple);
+    _triple.clear();
+    // Schreibe das x,y double in Vektor
+    xyVektor = {x, y};
+    // _alleWerte.push_back(xyVector);
+    _allIslands[b].push_back(xyVektor);
+      }
+}
+    yline++;
+  }
 }
 }
 // ____________________________________________________________

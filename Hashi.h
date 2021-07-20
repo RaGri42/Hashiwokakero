@@ -20,7 +20,9 @@ class Hashi {
   int _NullX;
   // NullPunkt Y des Spiels relativ zur Mitte
   int _NullY;
-  std::string _inputFileName;
+  // maximale Undoschritte
+  int _undoSteps;
+  std::string _fileName;
   // neu
   std::unordered_map<int, std::vector<std::vector<int>>> _YIslands;
   std::vector<int> _triple;
@@ -42,6 +44,8 @@ class Hashi {
   std::deque<std::vector<int>> _inselDeque2;
   std::vector<int> _undoVecIsland;
   // Memberfunktionen
+  void parseCommandLineArguments(int argc, char** argv);
+  void printUsageAndExit() const;
   void playGame();
   void initializeScreen();
   void processUserInput(int key);
