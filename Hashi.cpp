@@ -83,8 +83,8 @@ void Hashi::initializeScreen() {
   keypad(stdscr, true);
   mousemask(ALL_MOUSE_EVENTS, NULL);
 
-  _NullY = 0;
-  _NullX = 0;
+  _NullY = 3;
+  _NullX = 3;
   
   // Deques für die undo Funktion
   _brueckenDeque.resize(4);
@@ -300,21 +300,21 @@ void Hashi::printIslands() {
       else if(z[1] - z[2] < 0) { color = 2; }
       else { color = 0; }
       attron(COLOR_PAIR(color)); 
-      mvprintw (pair.first + _NullY , z[0] + _NullX , "%d" , z[1]);
+      mvprintw (3 * pair.first + _NullY , 3 * z[0] + _NullX , "%d" , z[1]);
       attroff(COLOR_PAIR(color));
       
-      //  for (int dx = -1; dx <= 1; dx++) {
-//    for (int dy = -1; dy <= 1; dy++) {
-//      if (!(dx == 0 && dy ==0)) {
-//       attron(A_REVERSE);
-//        mvprintw((pair.first + _NullY + dy), (z[0] +_NullX  + dx), " ");
-//      }
-//      }
-//  }
+      for (int dx = -1; dx <= 1; dx++) {
+      for (int dy = -1; dy <= 1; dy++) {
+      if (!(dx == 0 && dy ==0)) {
+       attron(A_REVERSE);
+        mvprintw((3 * pair.first + _NullY + dy), (3 * z[0] +_NullX  + dx), " ");
+      }
+      }
+  }
  }
 //  }
 }
-//attroff(A_REVERSE);
+attroff(A_REVERSE);
 }
 // ____________________________________________________________
 void Hashi::printBridges() {
@@ -328,7 +328,7 @@ void Hashi::printBridges() {
       else if (z[z.size()-1] == 2) {bridge = "H";}
 
       for (size_t i = 0; i < z.size() -1; i++) {
-      mvprintw(z[i] + _NullY , pair.first + _NullX , bridge);
+      mvprintw(3 * z[i] + _NullY , 3 * pair.first + _NullX , bridge);
   }
     }
 }
@@ -338,7 +338,7 @@ void Hashi::printBridges() {
       else if (z[z.size()-1] == 1) {bridge = "-";}
       else if (z[z.size()-1] == 2) {bridge = "=";}
       for (size_t i = 0; i < z.size() - 1; i++) {
-      mvprintw(pair.first + _NullY, z[i] + _NullX, bridge);
+      mvprintw(3 * pair.first + _NullY, 3 * z[i] + _NullX, bridge);
   }
   }
 }
