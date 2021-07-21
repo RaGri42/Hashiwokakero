@@ -104,7 +104,6 @@ void Hashi::processUserInput(int key) {
    std::deque<int> test;
   switch (key) {
     case 's':
-    mvprintw(15, 10, "Loesen");
     checkSolution(); 
     break;
     
@@ -143,6 +142,11 @@ void Hashi::readFile() {
   found = _fileName.find("plain");
   if (found != std::string::npos) {
     einleseCode = 1;
+  }
+  
+  found = _fileName.find("xy.solution");
+  if (found != std::string::npos) {
+    einleseCode = 2;
   }
 
 
@@ -308,15 +312,15 @@ void Hashi::printIslands() {
       for (int dx = -1; dx <= 1; dx++) {
       for (int dy = -1; dy <= 1; dy++) {
       if (!(dx == 0 && dy ==0)) {
-       attron(A_REVERSE);
-        mvprintw((3 * pair.first + _NullY + dy), (3 * z[0] +_NullX  + dx), " ");
+      // attron(A_REVERSE);
+        mvprintw((3 * pair.first + _NullY + dy), (3 * z[0] +_NullX  + dx), "*");
       }
       }
   }
  }
-//  }
-}
-attroff(A_REVERSE);
+ }
+//}
+//attroff(A_REVERSE);
 }
 // ____________________________________________________________
 void Hashi::printBridges() {
@@ -329,9 +333,20 @@ void Hashi::printBridges() {
       else if (z[z.size()-1] == 1) {bridge = "|";}
       else if (z[z.size()-1] == 2) {bridge = "H";}
 
-      for (size_t i = 0; i < z.size() -1; i++) {
-      mvprintw(3 * z[i] + _NullY , 3 * pair.first + _NullX , bridge);
-  }
+      for (int j = 0; j < 3 * z.size() -1; j++) {
+        // for (int i = 0; i < 3; i++) { 
+        int startY = 3 *  z[0];
+        int startX = 3 * pair.first + _NullX;
+        mvprintw(startY + j , startX, bridge);
+      //  mvprintw(3 *  z[0] + _NullY ,3* pair.first + _NullX, bridge);
+       // }
+         }
+
+//      for (size_t j = 0; j < z.size() -1; j++) {
+//         for (int i = 0; i < 3; i++) { 
+//        mvprintw(3 *  z[j] + _NullY ,3* pair.first + _NullX, bridge);
+//        }
+//         }
     }
 }
   for (auto& pair : _allYBridges) {
@@ -348,7 +363,7 @@ void Hashi::printBridges() {
 // ____________________________________________________________
 void Hashi::checkBridges(int x, int y) {
   // Suche in den X-Brücken (momentan ist x fix) nach dem Wert
-  mvprintw(16,22,"x bei Funktionsuafruf = %d", x);
+ // mvprintw(16,22,"x bei Funktionsuafruf = %d", x);
   int x1 = x;
   if (_allXBridges.count(x) > 0 ) {; }
    else if (_allXBridges.count(x-1) > 0 ) { x = x -1; }
@@ -411,7 +426,7 @@ void Hashi::checkBridges(int x, int y) {
    
 
   
-   mvprintw(20,30, "y Wert = %d", y);
+  // mvprintw(20,30, "y Wert = %d", y);
    if (_allYBridges.count(y) > 0 ) {
     
       
@@ -419,7 +434,7 @@ void Hashi::checkBridges(int x, int y) {
       for (size_t i = 0; i < _allYBridges[y][j].size()-1; i++) {
         
         if (_allYBridges[y][j][i] == x1) {
-      mvprintw( 14, 22, "x1 = %d", x1);
+    //  mvprintw( 14, 22, "x1 = %d", x1);
           int zustand;
       int undoZustand;
           // ____________________________________________________________
@@ -542,22 +557,20 @@ void Hashi::changeStateIsland(int x, int y, int z ) {
 ////      _inselDeque2.push_back(nullVec1);
 //}
 void Hashi::checkSolution() {
+  std::vector<int> zu;
   int sum = 0;
-  int o = 0;
+  
   for (auto& pair : _YIslands) {
    for (auto& islands : pair.second) {
-     std::vector<int> zu = islands;
-     o++;
-    mvprintw(2 + o, 18, "%d", zu[2] - zu[1]);
+    zu = islands;
     sum += (zu[2] - zu[1]);
-mvprintw(5,12,"%d",sum);
    }
 }
 
 if (sum == 0) {
-    mvprintw(20, 12 , "HURRA SPIEL GELOEST!");
+    mvprintw(4, 35 , "HURRA SPIEL GELOEST!");
 }
-else { mvprintw(20, 12 , "BLOEEEEKKKKKKK");
+else { mvprintw(5, 35 , "BLOEEEEKKKKKKK");
 }
 }
 
@@ -573,9 +586,7 @@ void Hashi::playGame() {
   int key  = getch();
   processUserInput(key);
   printBridges();
-  mvprintw(18, 22, "refrsh der Bridges");
   printIslands();
-  mvprintw(18, 22, "XXX");
   refresh();
 //  mvprintw(12, 20, "%d:%d", _NullY, _NullX);
 //  mvprintw(13, 20, "%d:%d", COLS, LINES);
