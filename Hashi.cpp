@@ -82,9 +82,10 @@ void Hashi::initializeScreen() {
   nodelay(stdscr, true);
   keypad(stdscr, true);
   mousemask(ALL_MOUSE_EVENTS, NULL);
-
-  _NullY = 3;
-  _NullX = 3;
+ // _NullX = (COLS / 2) - _maxXFeld;
+ // _NullY = (LINES / 2) - _maxYFeld;
+  _NullY = 2;
+  _NullX = 2;
   
   // Deques für die undo Funktion
   _brueckenDeque.resize(4);
@@ -114,9 +115,10 @@ void Hashi::processUserInput(int key) {
     case KEY_MOUSE:
     if (getmouse(&event) == OK) {
       if (event.bstate & BUTTON1_CLICKED) {
-          int lastClickedX = event.x - _NullX;
-          int lastClickedY = event.y - _NullY;
-//       mvprintw(12, 10, "%d,%d", lastClickedY, lastClickedX);
+          int lastClickedX = ((event.x  - _NullX) / 3);
+          int lastClickedY = ((event.y - _NullY) / 3);
+          
+          mvprintw(22, 10, "%d,%d", lastClickedY, lastClickedX);
             checkBridges(lastClickedX, lastClickedY);
      }
     }
@@ -346,7 +348,16 @@ void Hashi::printBridges() {
 // ____________________________________________________________
 void Hashi::checkBridges(int x, int y) {
   // Suche in den X-Brücken (momentan ist x fix) nach dem Wert
+  mvprintw(16,22,"x bei Funktionsuafruf = %d", x);
+  int x1 = x;
+  if (_allXBridges.count(x) > 0 ) {; }
+   else if (_allXBridges.count(x-1) > 0 ) { x = x -1; }
+   else if ( _allXBridges.count(x + 1) > 0 ) { x = x + 1; }
+   
+  
+    
   if (_allXBridges.count(x) > 0) {
+    
     for (size_t j = 0; j < _allXBridges[x].size(); j++) {
       for (size_t i = 0; i < _allXBridges[x][j].size()-1; i++) {
         if (_allXBridges[x][j][i] == y) {
@@ -391,11 +402,25 @@ void Hashi::checkBridges(int x, int y) {
         }
         }
         }
-    } else if (_allYBridges.count(y) > 0) {
+    } 
+   
+  if (_allYBridges.count(y) > 0 ) {; }
+   else if (_allYBridges.count(y-1) > 0 ) { y = y -1; }
+   else if ( _allYBridges.count(y + 1) > 0 ) { y = y + 1; }
+  
+   
+
+  
+   mvprintw(20,30, "y Wert = %d", y);
+   if (_allYBridges.count(y) > 0 ) {
+    
+      
     for (size_t j = 0; j < _allYBridges[y].size(); j++) {
       for (size_t i = 0; i < _allYBridges[y][j].size()-1; i++) {
-        if (_allYBridges[y][j][i] == x) {
-      int zustand;
+        
+        if (_allYBridges[y][j][i] == x1) {
+      mvprintw( 14, 22, "x1 = %d", x1);
+          int zustand;
       int undoZustand;
           // ____________________________________________________________
   switch (_allYBridges[y][j][_allYBridges[y][j].size()-1]) {
@@ -430,6 +455,7 @@ void Hashi::checkBridges(int x, int y) {
         
         changeStateIsland(xInselrechts, y, zustand );
 //        setUndoCache(xInselrechts, y, undoZustand, 1);
+        
         }
         }
         }
