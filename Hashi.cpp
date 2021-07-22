@@ -25,9 +25,8 @@ void Hashi::parseCommandLineArguments(int argc, char** argv) {
 struct option options[] = {
   {"undo-steps", 1, NULL, 'u'},
   {NULL, 0, NULL, 0}
- };
+};
   optind = 1;
-  
   // default
   _undoSteps = 5;
   _fileName = "";
@@ -49,7 +48,6 @@ struct option options[] = {
     exit(1);
   }
   _fileName = argv[optind];
-
 }
 // ____________________________________________________________
 /* Funktion gibt Fehlemeldung aus, wenn Programm mit falschen Parametern
@@ -59,7 +57,6 @@ struct option options[] = {
 
 void Hashi::printUsageAndExit() const {
   std::cerr << "Usage ./HashiMain [options] <inputfile>" << std::endl;
-
 }
 // ____________________________________________________________
 /* Screen initialisieren für ncurses
@@ -86,7 +83,7 @@ void Hashi::initializeScreen() {
  // _NullY = (LINES / 2) - _maxYFeld;
   _NullY = 2;
   _NullX = 2;
-  
+
   // Deques für die undo Funktion
   _brueckenDeque.resize(4);
   std::vector<int> initVec = { 33, 33, 33, 33 };
@@ -104,19 +101,16 @@ void Hashi::processUserInput(int key) {
    std::deque<int> test;
   switch (key) {
     case 's':
-    checkSolution(); 
+    checkSolution();
     break;
-    
     case 'u':
     //undoMove();
     break;
-
     case KEY_MOUSE:
     if (getmouse(&event) == OK) {
       if (event.bstate & BUTTON1_CLICKED) {
           int lastClickedX = ((event.x  - _NullX) / 3);
           int lastClickedY = ((event.y - _NullY) / 3);
-          
           mvprintw(22, 10, "%d,%d", lastClickedY, lastClickedX);
             checkBridges(lastClickedX, lastClickedY);
      }
@@ -231,7 +225,7 @@ if(einleseCode == 1) {
       linecount++;
     }
     std::getline(file, line);
-    for(int i = 0; i < line.length(); ++i) {
+    for(size_t i = 0; i < line.length(); ++i) {
       if (line.at(i) !=' ') {  
       char wert = line.at(i);
       x = i;
@@ -296,6 +290,59 @@ for (auto& pair : _yislands) {
   }
 }
 // ____________________________________________________________
+/* Prüfen ob sich Bruecken kreuzen.
+// Wenn ja dann wird eine unordered map angelegt mit dem betreffenden x/y Paar.
+// jedes Paar erhält an der letzten Stelle einen Index mit welchem angezeigt
+// wird ob die Brücke schon besteht oder nicht.
+*/
+// ____________________________________________________________
+void Hashi::getCrossing() {
+  int p = 0;
+  _vec.resize(2);
+  for (auto& bridges : _allYBridges) {
+    std::vector<std::vector<int>> yvec = bridges.second;  // Vector mit allen Brücken bei y fix
+    
+    for (int h = 0; h < yvec.size(); h++) {
+      std::vector<int> yvec1 = yvec[h];       // Vector mit einzelner Brücke
+
+      for (int l = 0; l < yvec1.size() - 1; l++) {  // Durchlaufe einzelne Brücke und prüfe ob x darin vorkommt
+
+          if (_allXBridges.count(yvec1[l]) > 0) {
+            // speicher alle y-Werte bei denen x auch vorkommt in einem Vektor
+            _vec.push_back(bridges.first);
+            // unorderedmap mit y als Key und zugehöriger x-Brücke
+            _YCrossings[bridges.first] = yvec1;
+            }
+      }
+    }
+  }
+
+        for (auto& ywert : _vec) {  // wenn Brücke vorkommt
+              for(auto& bridges : _allXBridges) {
+                std::vector<std::vector<int>> xvec = bridges.second;
+                for(int j = 0; j < xvec.size() - 1; j++) {
+                  std::vector<int> xvec1 = xvec[j];
+                  for(int i = 0; i < xvec1.size(); i++) {
+                     
+                    if (xvec1[i] == ywert) {
+                  _XCrossings[bridges.first] = xvec1;
+               //   mvprintw(2 + i, 80, "Y = %d, X = %d", bridges.first, c);
+               //   mvprintw(3 * bridges.first +_NullY, 3 * c + _NullX, "X");
+              
+                }
+              }
+            }
+            
+      }
+    
+      
+      }
+}
+                  
+
+              
+
+// ____________________________________________________________
 void Hashi::printIslands() {
   // durchlaufe alle Inselkoordinaten
   // gib Inselkoordinaten zu Häufigkeiten aus
@@ -333,7 +380,7 @@ void Hashi::printBridges() {
       else if (z[z.size()-1] == 1) {bridge = "|";}
       else if (z[z.size()-1] == 2) {bridge = "H";}
 
-      for (int j = 0; j < 3 * z.size() -1; j++) {
+      for (size_t j = 0; j < 3 * z.size() -1; j++) {
         // for (int i = 0; i < 3; i++) { 
         int startY = 3 *  z[0];
         int startX = 3 * pair.first + _NullX;
