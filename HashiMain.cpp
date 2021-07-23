@@ -114,53 +114,6 @@ for (auto& pair : game._YIslands) {
       std::cout << std::endl;
   }
   
-// ____________________________________________________________
-
-std::cout << "X - Doppelbruecken" << std::endl; 
-for (auto& pair : game._XCrossings) {
-    
-  std::cout << "[" << pair.first << "] ="; 
-     std::cout << "{";   
-  // pair.second = std::vector<std::vector<int>>  
-    for(auto& z : pair.second) { 
-     // std::cout <<"z.size()" << z.size()<< std::endl;
-      std::cout  << z;
-      std::cout << "  ";
-      }
-      
-      std::cout << "}";
-      // for (auto& n : z) {
-        //std::cout << pair.first << "x =";
-       
-     // std::cout << z.size() << std::endl;
-     // } 
-      std::cout << std::endl;
-  }
-// ____________________________________________________________  
-
-
-std::cout << "Y - Doppelbruecken" << std::endl; 
-for (auto& pair : game._YCrossings) {
-    
-  std::cout << "[" << pair.first << "] ="; 
-     std::cout << "{";   
-  // pair.second = std::vector<std::vector<int>>  
-    for(auto& z : pair.second) { 
-     // std::cout <<"z.size()" << z.size()<< std::endl;
-      std::cout  << z;
-      std::cout << "  ";
-      }
-      
-      std::cout << "}";
-      // for (auto& n : z) {
-        //std::cout << pair.first << "x =";
-       
-     // std::cout << z.size() << std::endl;
-     // } 
-      std::cout << std::endl;
-  }
-// ____________________________________________________________
-
 game.playGame();
 
 }

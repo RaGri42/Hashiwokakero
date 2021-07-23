@@ -20,6 +20,7 @@ class Hashi {
   int _NullX;
   // NullPunkt Y des Spiels relativ zur Mitte
   int _NullY;
+  int _sizeFactor;
   // maximale Undoschritte
   int _undoSteps;
   std::string _fileName;
