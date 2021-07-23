@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
   game.parseCommandLineArguments(argc, argv);
   game.readFile();
   game.getBridges();
-  game.getCrossing();
+//  game.getCrossing();
 //  game.checkBridges(9,4);
 //  game.checkBridges(9,4);
 //  game.checkBridges(2,8);

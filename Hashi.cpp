@@ -408,6 +408,54 @@ void Hashi::printBridges() {
 }
 }
 // ____________________________________________________________
+bool Hashi::checkCrossing(int x, int y, int selector) {
+  
+  // durchsuche XBridges nach zugehörigem y-Wert
+  if (selector == 1) {
+      if (_allXBridges.count(x) > 0) {
+        for (auto& bridge : _allXBridges[x]) {
+        std::vector<int> xbridge = bridge;
+          for (int j = 0; j < xbridge.size() - 1; j++) {
+            if (xbridge.at(j) == y) {
+              mvprintw( 22, 100, " y = %d, x = %d", y , x); 
+              
+              if(xbridge.at(xbridge.size() - 1) == 0) { 
+              mvprintw( 6, 100, "XCross-Bridge, kann gebaut werden!"); 
+              return 1; }
+                
+              else {  
+              mvprintw( 7, 100, "XCross-Bridge, kann nicht gebaut werden!"); 
+              return 0;
+              }
+          }
+   }
+}
+}
+}
+  // durchsuche YBridges nach zugehörigem x-Wert
+  if (selector == 0) {
+      if (_allYBridges.count(y) > 0) {
+        for (auto& bridge : _allYBridges[y]) {
+        std::vector<int> ybridge = bridge;
+          for (int j = 0; j < ybridge.size() - 1; j++) {
+            
+            mvprintw(10, 100, "ybridge.size-1 %d = ", ybridge.at(ybridge.size() - 1));
+            if (ybridge.at(j) == x && ybridge.at(ybridge.size() - 1) == 0) {
+               
+              mvprintw( 8, 100, "Cross-Bridge, kann gebaut werden!"); 
+              return 1; }
+                
+              else {  
+              mvprintw( 9, 100, "Cross-Bridge, kann nicht gebaut werden!"); 
+              return 0;
+              }
+          }
+   }
+}
+}
+ 
+}
+// ____________________________________________________________
 void Hashi::checkBridges(int x, int y) {
   // Suche in den X-Brücken (momentan ist x fix) nach dem Wert
  // mvprintw(16,22,"x bei Funktionsuafruf = %d", x);
@@ -416,13 +464,23 @@ void Hashi::checkBridges(int x, int y) {
    else if (_allXBridges.count(x-1) > 0 ) { x = x -1; }
    else if ( _allXBridges.count(x + 1) > 0 ) { x = x + 1; }
    
-  
+  // Pruefen ob Bruecken sich kreuzen
+
+        mvprintw(1,100, "Bei Aufruf checkBridges x = %d, y = %d", x, y);
+
     
   if (_allXBridges.count(x) > 0) {
     
     for (size_t j = 0; j < _allXBridges[x].size(); j++) {
       for (size_t i = 0; i < _allXBridges[x][j].size()-1; i++) {
         if (_allXBridges[x][j][i] == y) {
+        
+        bool antwort = checkCrossing( x, y, 0);
+        mvprintw(22,100, "Antwort ist = %d", antwort);
+          if(!antwort) {
+
+        // Prüfe ob es eine YBridge gibt mit dem gefundenen x
+        //  checkCrossing(y, x);
        int undoZustand;
        int zustand;
        // erhöhe den Zustand der zugehörigen XInseln
@@ -464,6 +522,7 @@ void Hashi::checkBridges(int x, int y) {
         }
         }
         }
+        }
     } 
    
   if (_allYBridges.count(y) > 0 ) {; }
@@ -475,13 +534,16 @@ void Hashi::checkBridges(int x, int y) {
   
   // mvprintw(20,30, "y Wert = %d", y);
    if (_allYBridges.count(y) > 0 ) {
-    
-      
+          
+        bool antwort2 = checkCrossing( x, y, 1);
+      if(!antwort2) {
     for (size_t j = 0; j < _allYBridges[y].size(); j++) {
       for (size_t i = 0; i < _allYBridges[y][j].size()-1; i++) {
         
         if (_allYBridges[y][j][i] == x1) {
-    //  mvprintw( 14, 22, "x1 = %d", x1);
+        checkCrossing(x1, y, 1);
+        
+          //  mvprintw( 14, 22, "x1 = %d", x1);
           int zustand;
       int undoZustand;
           // ____________________________________________________________
@@ -517,7 +579,7 @@ void Hashi::checkBridges(int x, int y) {
         
         changeStateIsland(xInselrechts, y, zustand );
 //        setUndoCache(xInselrechts, y, undoZustand, 1);
-        
+        }
         }
         }
         }
