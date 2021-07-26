@@ -74,7 +74,8 @@ class Hashi {
   void checkBridges(int x, int y);
   void getCrossing();
   void checkCrossing();
-  int bridgeAllowed(int x);
+  int bridgeAllowedX(int x);
+  int bridgeAllowedY(int y);
   void changeStateIsland(int x, int y, int z );
   void setUndoCache(int x, int y, int zustand, int step);
   void undoMove();

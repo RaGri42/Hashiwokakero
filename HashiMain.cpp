@@ -137,6 +137,32 @@ for (auto& pair : game._XCrossings) {
 std::cout << std::endl;
      }
 
+
+std::cout << "All YCrossings" << std::endl; 
+for (auto& pair : game._YCrossings) {
+    
+  std::cout << "[" << pair.first << "] ="; 
+  // pair.second = std::vector<std::vector<int>>  
+     std::cout << "{";   
+    for(auto& z : pair.second) { 
+    
+     // std::cout <<"z.size()" << z.size()<< std::endl;
+      std::cout <<  z;
+      std::cout << ",";    
+    }
+      
+      std::cout << "}";
+      // for (auto& n : z) {
+        //std::cout << pair.first << "x =";
+       
+     // std::cout << z.size() << std::endl;
+     // } 
+std::cout << std::endl;
+     }
+
+
+
+
 std::cout << "Alle tatsaechlichen Crossings" << std::endl; 
 for (auto& pair : game._allCrossings) {
     
