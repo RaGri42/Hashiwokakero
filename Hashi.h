@@ -23,6 +23,7 @@ class Hashi {
   int _sizeFactor;
   // maximale Undoschritte
   int _undoSteps;
+  int _vecPosition;
   std::string _fileName;
   // neu
   std::unordered_map<int, std::vector<std::vector<int>>> _YIslands;
@@ -34,6 +35,10 @@ class Hashi {
   std::vector <int> _vc1;
   std::vector <int> _vc2;
   std::vector<int> _vec;
+  std::vector<int> _YCrossBridgesTry;
+  std::vector<int> _YCrossBridges;
+  std::vector<int> _XCrossBridgesTry;
+  std::vector<int> _XCrossBridges;
   std::vector <std::vector<int>> _vecpair;
   
   std::unordered_map<int, std::vector<int>> _xislands;
@@ -49,7 +54,7 @@ class Hashi {
   std::unordered_map <int, std::vector <int>> _YCrossings;
   std::unordered_map <int, std::vector <int>> _XCrossings;
   
-  std::unordered_map <int, std::vector<std::vector <int>>> _allCrossings;
+  std::unordered_map <int, std::vector<int>> _allCrossings;
   std::vector<std::vector<int>> _alleWerte;
   std::deque<std::vector<int>> _brueckenDeque;
   std::deque<std::vector<int>> _inselDeque1;
@@ -68,7 +73,8 @@ class Hashi {
   void getBridges();
   void checkBridges(int x, int y);
   void getCrossing();
-  bool checkCrossing(int x, int y, int selektor);
+  void checkCrossing();
+  int bridgeAllowed(int x);
   void changeStateIsland(int x, int y, int z );
   void setUndoCache(int x, int y, int zustand, int step);
   void undoMove();

@@ -15,7 +15,8 @@ int main(int argc, char** argv) {
   game.parseCommandLineArguments(argc, argv);
   game.readFile();
   game.getBridges();
-//  game.getCrossing();
+  game.checkCrossing();
+  //  game.getCrossing();
 //  game.checkBridges(9,4);
 //  game.checkBridges(9,4);
 //  game.checkBridges(2,8);
@@ -113,7 +114,55 @@ for (auto& pair : game._YIslands) {
      }
       std::cout << std::endl;
   }
-  
-game.playGame();
+
+std::cout << "All XCrossings" << std::endl; 
+for (auto& pair : game._XCrossings) {
+    
+  std::cout << "[" << pair.first << "] ="; 
+  // pair.second = std::vector<std::vector<int>>  
+     std::cout << "{";   
+    for(auto& z : pair.second) { 
+    
+     // std::cout <<"z.size()" << z.size()<< std::endl;
+      std::cout <<  z;
+      std::cout << ",";    
+    }
+      
+      std::cout << "}";
+      // for (auto& n : z) {
+        //std::cout << pair.first << "x =";
+       
+     // std::cout << z.size() << std::endl;
+     // } 
+std::cout << std::endl;
+     }
+
+std::cout << "Alle tatsaechlichen Crossings" << std::endl; 
+for (auto& pair : game._allCrossings) {
+    
+  std::cout << "[" << pair.first << "] ="; 
+  // pair.second = std::vector<std::vector<int>>  
+     std::cout << "{";   
+    for(auto& z : pair.second) { 
+    
+     // std::cout <<"z.size()" << z.size()<< std::endl;
+      std::cout <<  z;
+      std::cout << ",";    
+    }
+      
+      std::cout << "}";
+      // for (auto& n : z) {
+        //std::cout << pair.first << "x =";
+       
+     // std::cout << z.size() << std::endl;
+     // } 
+std::cout << std::endl;
+     }
+
+
+
+
+
+      game.playGame();
 
 }
