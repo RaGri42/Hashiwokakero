@@ -137,6 +137,7 @@ void Hashi::readFile() {
   found = _fileName.find("xy.solution");
   if (found != std::string::npos) {
     einleseCode = 2;
+    mvprintw(12,22,"Einlesecode 2");
   }
 
 
@@ -237,13 +238,59 @@ if(einleseCode == 1) {
     yline++;
   }
 }
+
+if(einleseCode == 2) {
+    std::cout << "xySolution-Datei!" << std::endl;
+    for(int j = 0; j < 2; ++j){
+    std::getline(file, line);
+    }
+    size_t pos0;
+    
+    while (true) {
+    
+    std::getline(file, line);
+    pos0 = line.find("# Double");
+    
+    if ( pos0 != std::string::npos) {
+      break;
+    }
+    else {
+
+    size_t pos1 = line.find(",");
+    size_t pos2 = line.find(",", pos1 + 1);
+    size_t pos3 = line.find(",", pos2 + 1);
+    std::string s1 = line.substr(0, pos1);
+    std::string s2 = line.substr(pos1 + 1, pos2-pos1-1);
+    std::string s3 = line.substr(pos2 + 1, pos3-pos2-1);
+    std::string s4 = line.substr(pos3 + 1, line.npos);
+    // Int aus den Substrings extrahieren x, y, Bruecken
+    int x1 = atoi(s1.c_str());
+    int y1 = atoi(s2.c_str());
+    int x2 = atoi(s3.c_str());
+    int y2 = atoi(s4.c_str());
+      std::cout << "hi" << line << std::endl;
+      std::cout << "x1 = " << x1 << " y1 = " << y1 << " x2 = " << x2 << " y2= "
+        << y2 << std::endl;
+      
+      continue;
+    }
+    }
+    
+    while (true) {
+      if (file.eof()) { break; }
+    std::getline(file, line);
+    if (line.length() != 0) {
+    std::cout << "ho" << line << std::endl;
+    }
+    }
+}
 }
 // ____________________________________________________________
 void Hashi::writeFile() {
   std::ofstream myfile;
-  std::osstream oss;
-  oss << _fileName << ".xy.solution";
-  myfile.open (oss);
+  std::ostringstream oss;
+  oss << _fileName << ".solution";
+  myfile.open (oss.str());
   
   myfile << "# (xy.solution)" << std::endl;
   myfile << "# x1, y1, x2, y2" << std::endl;
