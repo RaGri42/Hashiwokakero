@@ -31,7 +31,6 @@ class Hashi {
   std::vector<int> _bridge;
   std::vector<int> _undoVec;
   std::vector<std::vector<int>> _returnVec;
-  
   std::vector <int> _vc1;
   std::vector <int> _vc2;
   std::vector<int> _vec;
@@ -40,7 +39,6 @@ class Hashi {
   std::vector<int> _XCrossBridgesTry;
   std::vector<int> _XCrossBridges;
   std::vector <std::vector<int>> _vecpair;
-  
   std::unordered_map<int, std::vector<int>> _xislands;
   std::unordered_map<int, std::vector<int>> _yislands;
   std::unordered_map<int, std::vector<int>> _ybridges;
@@ -50,11 +48,10 @@ class Hashi {
   std::unordered_map<int, std::vector<std::vector<int>>> _allXBridges;
   std::unordered_map<int, std::vector<int>> _allXBridges2;
   std::unordered_map<int, std::vector<std::vector<int>>> _allYBridges;
-  
   std::unordered_map <int, std::vector <int>> _YCrossings;
   std::unordered_map <int, std::vector <int>> _XCrossings;
-  
   std::unordered_map <int, std::vector<int>> _allCrossings;
+  std::unordered_map <int, std::vector<std::vector<int>>> _solBridges;
   std::vector<std::vector<int>> _alleWerte;
   std::deque<std::vector<int>> _brueckenDeque;
   std::deque<std::vector<int>> _inselDeque1;
@@ -70,15 +67,17 @@ class Hashi {
   void printBridges();
   void printField();
   void readFile();
+  void writeFile();
   void getBridges();
   void checkBridges(int x, int y);
   void getCrossing();
   void checkCrossing();
   int bridgeAllowedX(int x);
   int bridgeAllowedY(int y);
-  void changeStateIsland(int x, int y, int z );
+  void changeStateIsland(int x, int y, int z);
   void setUndoCache(int x, int y, int zustand, int step);
   void undoMove();
   void checkSolution();
+  void getSolution();
 };
 #endif  //  HASHI_H_

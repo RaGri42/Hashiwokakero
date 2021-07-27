@@ -79,8 +79,8 @@ void Hashi::initializeScreen() {
   nodelay(stdscr, true);
   keypad(stdscr, true);
   mousemask(ALL_MOUSE_EVENTS, NULL);
- // _NullX = (COLS / 2) - _maxXFeld;
- // _NullY = (LINES / 2) - _maxYFeld;
+  // _NullX = (COLS / 2) - _maxXFeld;
+  // _NullY = (LINES / 2) - _maxYFeld;
   _NullY = 0;
   _NullX = 0;
   _sizeFactor = 3;
@@ -88,8 +88,7 @@ void Hashi::initializeScreen() {
   _brueckenDeque.resize(4);
   std::vector<int> initVec = { 33, 33, 33, 33 };
   _brueckenDeque.push_front(initVec);
-  
-   std::vector<int> initVec2 = { 33, 33, 33};
+  std::vector<int> initVec2 = { 33, 33, 33};
   _inselDeque1.resize(3);
   _inselDeque1.push_front(initVec2);
   _inselDeque2.push_front(initVec2);
@@ -98,13 +97,13 @@ void Hashi::initializeScreen() {
 
 void Hashi::processUserInput(int key) {
   MEVENT event;
-   std::deque<int> test;
-  switch (key) {
+  std::deque<int> test;
+    switch (key) {
     case 's':
     checkSolution();
     break;
     case 'u':
-    //undoMove();
+    // undoMove();
     break;
     case KEY_MOUSE:
     if (getmouse(&event) == OK) {
@@ -125,19 +124,16 @@ void Hashi::processUserInput(int key) {
 // ____________________________________________________________
 
 void Hashi::readFile() {
- // _fileName = "i044-n009-s10x09.xy";
- 
+  // _fileName = "i044-n009-s10x09.xy";
   std::size_t found = _fileName.find("xy");
   int einleseCode;
   if (found != std::string::npos) {
     einleseCode = 0;
   }
-  
   found = _fileName.find("plain");
   if (found != std::string::npos) {
     einleseCode = 1;
   }
-  
   found = _fileName.find("xy.solution");
   if (found != std::string::npos) {
     einleseCode = 2;
@@ -148,20 +144,19 @@ void Hashi::readFile() {
  
   std::ifstream file(_fileName.c_str());
   if (!file.is_open()) {
-    std::cerr << "Can't open file!"<< _fileName << std::endl;
-    exit(1);
+  std::cerr << "Can't open file!"<< _fileName << std::endl;
+  exit(1);
   }
-  
   std::string line;
   // erste Zeile hier steht die Feldgrösse drin
   std::getline(file, line);
   size_t linecount = 0;
   std::vector<int> xyVektor;
   xyVektor.resize(2);
-  
+
   if (einleseCode == 0) {
   while (true) {
-    if (file.eof()) { break; }
+    if (file.eof()) { break;}
     // erste Zeile? Lese Feld Koordinaten aus
     if (linecount == 0) {
       size_t pos0 = line.find(":");
@@ -172,7 +167,6 @@ void Hashi::readFile() {
       linecount++;
     }
     std::getline(file, line);
-    
     size_t pos1 = line.find(",");
     size_t pos2 = line.find(",", pos1 + 1);
     std::string s1 = line.substr(0, pos1);
@@ -201,35 +195,31 @@ void Hashi::readFile() {
 
 if(einleseCode == 1) {
     std::cout << "plain-Datei!" << std::endl;
-  
+    
     int x;
     int y;
-    int b; 
- int yline = 0;
- while (true) {
-    
+    int b;
+    int yline = 0;
+  while (true) {
     if (file.eof()) { break; }
-    
     // erste Zeile? Lese Feld Koordinaten aus
     if (linecount == 0) {
-      size_t pos0 = line.find(":");
-      std::string s0 = line.substr(1, pos0-1);
-      std::string s01 = line.substr(pos0 + 1, 2);
-      _maxXFeld = atoi(s0.c_str());
-      _maxYFeld = atoi(s01.c_str());
-      linecount++;
+    size_t pos0 = line.find(":");
+    std::string s0 = line.substr(1, pos0-1);
+    std::string s01 = line.substr(pos0 + 1, 2);
+    _maxXFeld = atoi(s0.c_str());
+    _maxYFeld = atoi(s01.c_str());
+    linecount++;
     }
     std::getline(file, line);
     for(size_t i = 0; i < line.length(); ++i) {
-      if (line.at(i) !=' ') {  
+      if (line.at(i) !=' ') {
       char wert = line.at(i);
       x = i;
       y = yline;
       b = wert - 48;
-      
-    
     // Test ob letzte Zeile eingelesen wurde
-   // if (x == 0 && y == 0 && b == 0) { break; }
+    // if (x == 0 && y == 0 && b == 0) { break; }
     // Werte in eine unordererd Map einlesen
     // x und y als key
     _xislands[x].push_back(y);
@@ -248,6 +238,35 @@ if(einleseCode == 1) {
   }
 }
 }
+// ____________________________________________________________
+void Hashi::writeFile() {
+  std::ofstream myfile;
+  myfile.open ("solution.xy");
+  
+  myfile << "# (xy.solution)" << std::endl;
+  myfile << "# x1, y1, x2, y2" << std::endl;
+  for (auto& pair : _solBridges) {
+    if (pair.first == 1) {
+      myfile << "# Single bridge" << std::endl;
+    }
+    if (pair.first == 2) {
+      myfile << "# Double bridge" << std::endl;
+    }
+    for (auto& vector : pair.second) {
+        for (int j = 0; j < 4 ; j++) {
+        myfile << vector.at(j) << (j < 3 ? "," : "");  
+      }
+        myfile << std::endl;
+    }
+  }
+
+      myfile.close();
+}
+
+
+
+
+
 // ____________________________________________________________
 /* Berechnet alle Brücken zwischen den Inseln
  * speichert diese für x und y in einer unordered_map
@@ -300,27 +319,24 @@ void Hashi::printIslands() {
   for (auto& pair : _YIslands) {
     for (auto& z : pair.second) {
       int color = 0;
-      if(z[1] - z[2] == 0) { color = 1; }
-      else if(z[1] - z[2] < 0) { color = 2; }
+      if (z[1] - z[2] == 0) { color = 1; }
+      else if (z[1] - z[2] < 0) { color = 2; }
       else { color = 0; }
-      attron(COLOR_PAIR(color)); 
+      attron(COLOR_PAIR(color));
       mvprintw (_sizeFactor * pair.first + _NullY , _sizeFactor * z[0] + _NullX , "%d" , z[1]);
       attroff(COLOR_PAIR(color));
-      
       for (int dx = -1; dx <= 1; dx++) {
       for (int dy = -1; dy <= 1; dy++) {
       if (!(dx == 0 && dy ==0)) {
-   //   attron(A_REVERSE);
-      mvprintw((_sizeFactor * pair.first + _NullY + dy), (_sizeFactor * z[0] +_NullX  + dx), "+");
+      // attron(A_REVERSE);
+      mvprintw((_sizeFactor * pair.first + _NullY + dy), 
+          (_sizeFactor * z[0] +_NullX  + dx), "+");
       }
       }
   }
  }
  }
-//}
-// attroff(A_REVERSE);
 }
-
 // ____________________________________________________________
 /* Zeichne angeklickte Bruecken
 */
@@ -334,15 +350,12 @@ void Hashi::printBridges() {
       if (z[z.size()-1] == 0) {bridge =" ";}
       else if (z[z.size()-1] == 1) {bridge = "|";}
       else if (z[z.size()-1] == 2) {bridge = "H";}
-
-   
       for (size_t j = 0; j < z.size() - 1 ; j++) {
       for (int i = -1; i < 3 ; ++i) {      
         mvprintw(_sizeFactor * z[j] + i + _NullY , _sizeFactor *  pair.first +_NullX, bridge);
-      
       }
    }
-    }
+  }
 }
 for (auto& pair : _allYBridges) {
   for (auto& z : pair.second) {
@@ -354,14 +367,11 @@ for (auto& pair : _allYBridges) {
         }
     }
   }
-
-
 for (auto& pair : _allCrossings) {
   for (auto& z : pair.second) {
       mvprintw(_sizeFactor * z + _NullY, _sizeFactor * pair.first + _NullX , "X");
     }
   }
-
 }
 // ____________________________________________________________
 /* Findet Kreuzungen zwischen Brücken
@@ -370,8 +380,7 @@ for (auto& pair : _allCrossings) {
 void Hashi::checkCrossing() {
   for (auto& pair : _allXBridges) {                 // durchlaufe alle XBridges, 
       for (auto& y1 : pair.second) {                  // schaue ob die y-Werte der XBridges
-        for (int j = 0; j < y1.size() - 1; j++) {     
-          
+        for (size_t j = 0; j < y1.size() - 1; j++) {
         int y2 = y1.at(j);                            // schaue ob die y-Werte der XBridges
         if (_allYBridges.count(y2)) {                 // als YBridges gibt
             _XCrossings[pair.first].push_back(y2);          // speichere gefundene y in unsorted_map
@@ -379,25 +388,23 @@ void Hashi::checkCrossing() {
       }
     }
  }
-   
   for (auto& pair : _XCrossings) {                      // nimm die gefundenen Werte und schaue
     for (auto& ya : pair.second) {                      // ob der X-Wert auch in der Y-Bruecke vorkommt
-         for (int j = 0; j < _allYBridges[ya].size(); j++) {  
-            for (int i = 0; i < _allYBridges[ya][j].size() - 1; i++) {
-              int xa = _allYBridges[ya][j][i];
-              if (xa == pair.first) {
+      for (size_t j = 0; j < _allYBridges[ya].size(); j++) {  
+        for (size_t i = 0; i < _allYBridges[ya][j].size() - 1; i++) {
+             int xa = _allYBridges[ya][j][i];
+             if (xa == pair.first) {
       // x kommt auch in YBridge vor
       // jetzt wird die Kreuzung in einer unordered_map gespeichert mit x als
       // key
       _allCrossings[pair.first].push_back(ya);
-      _YCrossings[ya].push_back(pair.first);        
-              }
-            }
-         }
+      _YCrossings[ya].push_back(pair.first);
+          }
+        }
+      }
     }
   }
 }
-
 // ____________________________________________________________
 /* Diese Funktion checkt ob eine Bruecke bei gegebenem x erlaubt ist
  * oder ob es schon bereits eine YBridge an dieser Stelle gibt
@@ -406,7 +413,6 @@ void Hashi::checkCrossing() {
  * werden
  */
 // ____________________________________________________________
-
 int Hashi::bridgeAllowedX(int x) {
   int sum = 0; 
   if (_allCrossings.count(x)) {
@@ -423,7 +429,7 @@ int Hashi::bridgeAllowedX(int x) {
             // Brueckenstatus der YBridge ist nicht null --> Bruecke darf nicht
             // gebaut werden
               sum += 1;
-            }
+              }
             }
           }
         }
@@ -439,7 +445,7 @@ int Hashi::bridgeAllowedY(int y) {
     for (auto& xwert : _YCrossings[y]) { 
       if (_allXBridges.count(xwert)) {
         for (int j = 0; j < _allXBridges[xwert].size(); j++) {
-          for(int i = 0; i < _allXBridges[xwert][j].size() - 1; i++) {
+          for (int i = 0; i < _allXBridges[xwert][j].size() - 1; i++) {
             if (y == _allXBridges[xwert][j][i]) {
             // _XBridges[x][j][i] ist die Brücke die kreuzt
             if (_allXBridges[xwert][j][_allXBridges[xwert][j].size() - 1] == 0) {
@@ -449,7 +455,7 @@ int Hashi::bridgeAllowedY(int y) {
             // Brueckenstatus der YBridge ist nicht null --> Bruecke darf nicht
             // gebaut werden
               sum += 1;
-            }
+              }
             }
           }
         }
@@ -458,16 +464,11 @@ int Hashi::bridgeAllowedY(int y) {
   }
   return sum;
 }
-
-
-
 // ____________________________________________________________
 void Hashi::checkBridges(int x, int y) {
   int x1 = x;
   int check = 0; 
   // Pruefen ob Bruecken sich kreuzen
-
-
   // Vergroessteten Klickbereich abfragen
   if (_allXBridges.count(x)) {; }
    else if (_allXBridges.count(x-1)) { x = x -1; }
@@ -510,48 +511,39 @@ void Hashi::checkBridges(int x, int y) {
       undoZustand = 2;
       break;
   }
-
-        
       _brueckenDeque.push_front(_undoVec);
       _brueckenDeque.pop_back();
       _undoVec.clear();
-        
-        int yInselOben = _allXBridges[x][j][0] - 1;
-        int yInselUnten = _allXBridges[x][j][_allXBridges[x][j].size()-2] + 1;
-        changeStateIsland(x, yInselOben, zustand);
-    //    setUndoCache(x, yInselOben, undoZustand, 0);
-        changeStateIsland(x, yInselUnten, zustand);
-  }
-        } 
+      int yInselOben = _allXBridges[x][j][0] - 1;
+      int yInselUnten = _allXBridges[x][j][_allXBridges[x][j].size()-2] + 1;
+      changeStateIsland(x, yInselOben, zustand);
+      // setUndoCache(x, yInselOben, undoZustand, 0);
+      changeStateIsland(x, yInselUnten, zustand);
       }
-        }
     } 
-   
-   
-   
-
+  }
+ }
+}
 // wird nur ausgeführt wenn kein x, y Paar bei allXBridges gefunden wurde  
   if (check == 0) {
 int rueck = 0;
-   if (_allYBridges.count(y) > 0 ) {; }
+   if (_allYBridges.count(y) > 0 ) {;}
    else if (_allYBridges.count(y-1) > 0 ) { y = y -1; }
    else if ( _allYBridges.count(y + 1) > 0 ) { y = y + 1; }
 
-  
-   if (_allYBridges.count(y) > 0 ) {
+   if ( _allYBridges.count(y) > 0 ) {
     for (size_t j = 0; j < _allYBridges[y].size(); j++) {
       for (size_t i = 0; i < _allYBridges[y][j].size()-1; i++) {
         if (_allYBridges[y][j][i] == x) {
           int zustand;
           int undoZustand;
-          
           rueck = bridgeAllowedY(y);
-          if(rueck != 0) {
-          mvprintw(2, 50, "Diese y Brücke kann nicht gebaut werden da kreuezen");
+          if (rueck != 0) {
+          mvprintw(2, 50, "Bruecke verboten -> kreuzt");
           }
           // Zusstand der Bruecken in Abhaengigkeit vom Ist-Zustand veraendern
- if (rueck == 0) {
- switch (_allYBridges[y][j][_allYBridges[y][j].size()-1]) {
+  if (rueck == 0) {
+  switch (_allYBridges[y][j][_allYBridges[y][j].size()-1]) {
     case 0:
       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 1;
       _undoVec = {1, y, j, 0};
@@ -559,68 +551,111 @@ int rueck = 0;
       zustand = 1;
       break;
     case 1:
-       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 2;
-      _undoVec = {1, y, j, 1}; 
+      _allYBridges[y][j][_allYBridges[y][j].size()-1] = 2;
+      _undoVec = {1, y, j, 1};
       undoZustand = -1;
       zustand = 1;
       break;
     case 2:
       _allYBridges[y][j][_allYBridges[y][j].size()-1] = 0;
-      _undoVec = {1, y, j, 2}; 
+      _undoVec = {1, y, j, 2};
       undoZustand = 2;
       zustand = -2;
       break;
   }
-
       _brueckenDeque.push_front(_undoVec);
       _brueckenDeque.pop_back();
-        _undoVec.clear();
-        int xInsellinks = _allYBridges[y][j][0] - 1;
-        int xInselrechts = _allYBridges[y][j][_allYBridges[y][j].size()-2] + 1;
-        
-        changeStateIsland(xInsellinks, y, zustand);
-        changeStateIsland(xInselrechts, y, zustand );
- }
+      _undoVec.clear();
+      int xInsellinks = _allYBridges[y][j][0] - 1;
+      int xInselrechts = _allYBridges[y][j][_allYBridges[y][j].size()-2] + 1;
+      changeStateIsland(xInsellinks, y, zustand);
+      changeStateIsland(xInselrechts, y, zustand);
+            }
+          }
         }
       }
     }
-   }
   }
 }
-
-
 // ____________________________________________________________
 void Hashi::changeStateIsland(int x, int y, int z ) {
   if (_YIslands.count(y) > 0) {
   for (size_t j = 0; j < _YIslands[y].size(); j++) {
     if (_YIslands[y][j][0] == x) {
-      
       _YIslands[y][j][2] += z;
     }
   }
   } else { std::cout << " Bruecke nicht vorhanden!" << std::endl;}
 }
-
 // ____________________________________________________________
 void Hashi::checkSolution() {
   std::vector<int> zu;
   int sum = 0;
-  
   for (auto& pair : _YIslands) {
-   for (auto& islands : pair.second) {
+    for (auto& islands : pair.second) {
     zu = islands;
     sum += (zu[2] - zu[1]);
-   }
   }
-
+  }
   if (sum == 0) {
     mvprintw(4, 50 , "DAS SPIEL WURDE GELOEST!");
+    getSolution();
+    writeFile();
   } else { mvprintw(5, 50 , "DIESE LOESUNG IST LEIDER FALSCH!");}
 }
-
+// ____________________________________________________________
+void Hashi::getSolution() {
+  // alleInseln in unordered map schreiben
+  // sortiert nach einfach, doppel
+  // x1, y1, x2, y2
+  std::vector<int> solVector;
+  for (auto& ym : _allXBridges) {
+    for (auto& yv : ym.second) {
+      if (yv.at(yv.size() -1) == 1) {
+      solVector.push_back(ym.first);
+      solVector.push_back(yv.at(0) - 1);
+      solVector.push_back(ym.first);
+      solVector.push_back(yv.at(yv.size() - 2) + 1);
+      
+      _solBridges[1].push_back(solVector);
+      solVector.clear();
+      }  
+      
+      if (yv.at(yv.size() -1) == 2) {
+      solVector.push_back(ym.first);
+      solVector.push_back(yv.at(0) - 1);
+      solVector.push_back(ym.first);
+      solVector.push_back(yv.at(yv.size() - 2) + 1);
+      _solBridges[2].push_back(solVector);
+      solVector.clear();
+      }  
+    }
+  }
+  for (auto& xm : _allYBridges) {
+    for (auto& xv : xm.second) {
+      if (xv.at(xv.size() -1) == 1) {
+      solVector.push_back(xm.first);
+      solVector.push_back(xv.at(0) - 1);
+      solVector.push_back(xm.first);
+      solVector.push_back(xv.at(xv.size() - 2) + 1);
+      
+      _solBridges[1].push_back(solVector);
+      solVector.clear();
+      }  
+      
+      if (xv.at(xv.size() -1) == 2) {
+      solVector.push_back(xm.first);
+      solVector.push_back(xv.at(0) - 1);
+      solVector.push_back(xm.first);
+      solVector.push_back(xv.at(xv.size() - 2) + 1);
+      _solBridges[2].push_back(solVector);
+      solVector.clear();
+      }  
+    }
+  }
+}
 // ____________________________________________________________
 void Hashi::playGame() {
-  
   initializeScreen();
   while (true) {
   int key  = getch();

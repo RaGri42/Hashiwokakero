@@ -186,7 +186,37 @@ std::cout << std::endl;
      }
 
 
+std::cout << "Bruecken in X Solution" << std::endl; 
+for (auto& pair : game._allXBridges) {
+    
+    
+  for(auto& z : pair.second) { 
+        
+//        if (z.size() == 2) {
+    if (z.size() - 1 == 1) {
 
+    std::cout << "[single] = {";   
+    std::cout << pair.first << (z.at(0) - 1) << pair.first << z.at(z.size() - 2) + 1 <<std::endl;
+        }
+    if (z.size() - 1 == 2) {
+
+    std::cout << "[double] = {";   
+    std::cout << pair.first << (z.at(0) - 1) << pair.first << z.at(z.size() - 2) + 1 <<std::endl;
+        }
+
+    else { std::cout << "What??" <<std::endl;
+        
+}      
+      std::cout << "}";
+      std::cout << std::endl;
+      // for (auto& n : z) {
+        //std::cout << pair.first << "x =";
+       
+     // std::cout << z.size() << std::endl;
+     // } 
+std::cout << std::endl;
+     }
+}
 
 
       game.playGame();
