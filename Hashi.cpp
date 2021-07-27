@@ -241,7 +241,9 @@ if(einleseCode == 1) {
 // ____________________________________________________________
 void Hashi::writeFile() {
   std::ofstream myfile;
-  myfile.open ("solution.xy");
+  std::osstream oss;
+  oss << _fileName << ".xy.solution";
+  myfile.open (oss);
   
   myfile << "# (xy.solution)" << std::endl;
   myfile << "# x1, y1, x2, y2" << std::endl;
