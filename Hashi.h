@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include <deque>
 class Hashi {
  public:
@@ -38,6 +39,7 @@ class Hashi {
   std::vector<int> _YCrossBridges;
   std::vector<int> _XCrossBridgesTry;
   std::vector<int> _XCrossBridges;
+  std::vector<std::vector<int>> _clickBridges;
   std::vector <std::vector<int>> _vecpair;
   std::unordered_map<int, std::vector<int>> _xislands;
   std::unordered_map<int, std::vector<int>> _yislands;
@@ -51,7 +53,7 @@ class Hashi {
   std::unordered_map <int, std::vector <int>> _YCrossings;
   std::unordered_map <int, std::vector <int>> _XCrossings;
   std::unordered_map <int, std::vector<int>> _allCrossings;
-  std::unordered_map <int, std::vector<std::vector<int>>> _solBridges;
+  std::map <int, std::vector<std::vector<int>>> _solBridges;
   std::vector<std::vector<int>> _alleWerte;
   std::deque<std::vector<int>> _brueckenDeque;
   std::deque<std::vector<int>> _inselDeque1;
@@ -79,5 +81,9 @@ class Hashi {
   void undoMove();
   void checkSolution();
   void getSolution();
+  void getXYSolution();
+  void readXYFile();
+  void readPlainFile();
+  void solvePuzzle();
 };
 #endif  //  HASHI_H_

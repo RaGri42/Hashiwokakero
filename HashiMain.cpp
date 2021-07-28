@@ -217,7 +217,22 @@ for (auto& pair : game._allXBridges) {
 std::cout << std::endl;
      }
 }
+// ____________________________________________________________
+std::cout << "Click Bridges" << std::endl; 
+for (auto& pair : game._clickBridges) {
+    
+    
+        
+//        if (z.size() == 2) {
 
+    std::cout << pair.at(0) << pair.at(1) << std::endl;
+        }
+
+
+        
+
+
+// ____________________________________________________________
 
       game.playGame();
 

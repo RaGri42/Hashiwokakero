@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
+#include <map>
 #include <sstream>
 #include <deque>
 
@@ -128,22 +129,53 @@ void Hashi::readFile() {
   std::size_t found = _fileName.find("xy");
   int einleseCode;
   if (found != std::string::npos) {
-    einleseCode = 0;
+    readXYFile();
+    // einleseCode = 0;
   }
   found = _fileName.find("plain");
   if (found != std::string::npos) {
-    einleseCode = 1;
+    readPlainFile();
+    //einleseCode = 1;
   }
   found = _fileName.find("xy.solution");
   if (found != std::string::npos) {
-    einleseCode = 2;
-    mvprintw(12,22,"Einlesecode 2");
+    getXYSolution();
+    readXYFile();
+ //   solvePuzzle();
+    // einleseCode = 0;
+  }
+} 
+
+// ____________________________________________________________
+void Hashi::writeFile() {
+  std::ofstream myfile;
+  std::ostringstream oss;
+  oss << _fileName << ".solution";
+  myfile.open (oss.str());
+  
+  myfile << "# (xy.solution)" << std::endl;
+  myfile << "# x1, y1, x2, y2" << std::endl;
+  for (auto& pair : _solBridges) {
+    if (pair.first == 1) {
+      myfile << "# Single bridge" << std::endl;
+    }
+    if (pair.first == 2) {
+      myfile << "# Double bridge" << std::endl;
+    }
+    for (auto& vector : pair.second) {
+        for (int j = 0; j < 4 ; j++) {
+        myfile << vector.at(j) << (j < 3 ? "," : "");  
+      }
+        myfile << std::endl;
+    }
   }
 
+      myfile.close();
+}
+// ____________________________________________________________
+void Hashi::readXYFile() {
 
-
- 
-  std::ifstream file(_fileName.c_str());
+std::ifstream file(_fileName.c_str());
   if (!file.is_open()) {
   std::cerr << "Can't open file!"<< _fileName << std::endl;
   exit(1);
@@ -155,7 +187,6 @@ void Hashi::readFile() {
   std::vector<int> xyVektor;
   xyVektor.resize(2);
 
-  if (einleseCode == 0) {
   while (true) {
     if (file.eof()) { break;}
     // erste Zeile? Lese Feld Koordinaten aus
@@ -193,9 +224,22 @@ void Hashi::readFile() {
     _allIslands[b].push_back(xyVektor);
 }
 }
+// ____________________________________________________________
+void Hashi::readPlainFile() {
+    
+std::ifstream file(_fileName.c_str());
+  if (!file.is_open()) {
+  std::cerr << "Can't open file!"<< _fileName << std::endl;
+  exit(1);
+  }
+  std::string line;
+  // erste Zeile hier steht die Feldgrösse drin
+  std::getline(file, line);
+  size_t linecount = 0;
+  std::vector<int> xyVektor;
+  xyVektor.resize(2);
 
-if(einleseCode == 1) {
-    std::cout << "plain-Datei!" << std::endl;
+  std::cout << "plain-Datei!" << std::endl;
     
     int x;
     int y;
@@ -239,7 +283,20 @@ if(einleseCode == 1) {
   }
 }
 
-if(einleseCode == 2) {
+
+
+// ____________________________________________________________
+void Hashi::getXYSolution() {
+  
+  std::ifstream file(_fileName.c_str());
+  if (!file.is_open()) {
+  std::cerr << "Can't open file!"<< _fileName << std::endl;
+  exit(1);
+  }
+  std::string line;
+  // erste Zeile hier steht die Feldgrösse drin
+  std::getline(file, line);
+  size_t linecount = 0;
     std::cout << "xySolution-Datei!" << std::endl;
     for(int j = 0; j < 2; ++j){
     std::getline(file, line);
@@ -247,15 +304,16 @@ if(einleseCode == 2) {
     size_t pos0;
     
     while (true) {
+    if (file.eof()) { break; }
     
     std::getline(file, line);
     pos0 = line.find("# Double");
     
     if ( pos0 != std::string::npos) {
-      break;
+      // Linie überspringen
+      continue;
     }
     else {
-
     size_t pos1 = line.find(",");
     size_t pos2 = line.find(",", pos1 + 1);
     size_t pos3 = line.find(",", pos2 + 1);
@@ -268,52 +326,43 @@ if(einleseCode == 2) {
     int y1 = atoi(s2.c_str());
     int x2 = atoi(s3.c_str());
     int y2 = atoi(s4.c_str());
-      std::cout << "hi" << line << std::endl;
-      std::cout << "x1 = " << x1 << " y1 = " << y1 << " x2 = " << x2 << " y2= "
-        << y2 << std::endl;
-      
-      continue;
-    }
+    std::cout << x1 << "zz"  << y1 << "zz"<< x2 << "zz"<< y2 << "zz" <<std::endl;
+    if ( x1 == 0 &&  x2 == 0 && y1 == 0 && y2 ==0 ) { break; }
+    std::vector<int> xyPair;
+    if (x1 == x2) {
+        int yb = ((y2 - y1) / 2) + y1;
+        xyPair.push_back(x1);
+        xyPair.push_back(yb);
+        _clickBridges.push_back(xyPair);
+        std::cout << x1 << "," << yb << std::endl;
+        xyPair.clear();
     }
     
-    while (true) {
-      if (file.eof()) { break; }
-    std::getline(file, line);
-    if (line.length() != 0) {
-    std::cout << "ho" << line << std::endl;
+    if (y1 == y2) {
+        int xb = ((x2 - x1) / 2) + x1;
+        xyPair.push_back(xb);
+        xyPair.push_back(y1);
+        _clickBridges.push_back(xyPair);
+        std::cout << "xb = " << xb << ","<< "y1 =" << y1 << std::endl;
+        xyPair.clear();
     }
-    }
-}
-}
-// ____________________________________________________________
-void Hashi::writeFile() {
-  std::ofstream myfile;
-  std::ostringstream oss;
-  oss << _fileName << ".solution";
-  myfile.open (oss.str());
-  
-  myfile << "# (xy.solution)" << std::endl;
-  myfile << "# x1, y1, x2, y2" << std::endl;
-  for (auto& pair : _solBridges) {
-    if (pair.first == 1) {
-      myfile << "# Single bridge" << std::endl;
-    }
-    if (pair.first == 2) {
-      myfile << "# Double bridge" << std::endl;
-    }
-    for (auto& vector : pair.second) {
-        for (int j = 0; j < 4 ; j++) {
-        myfile << vector.at(j) << (j < 3 ? "," : "");  
+    std::cout << "x1 = " << x1 << " y1 = " << y1 << " x2 = " << x2 << " y2= "
+        << y2 << std::endl;
+        }
       }
-        myfile << std::endl;
-    }
-  }
 
-      myfile.close();
+    _fileName = _fileName.substr(0, _fileName.length() - 9);
+    std::cout << _fileName << std::endl;
 }
 
-
-
+// ____________________________________________________________
+void Hashi::solvePuzzle() {
+    int z = 0;
+  for (auto& wert : _clickBridges) {
+    z++;
+    checkBridges(wert.at(0), wert.at(1));
+  }
+}
 
 
 // ____________________________________________________________
@@ -590,7 +639,7 @@ int rueck = 0;
           if (rueck != 0) {
           mvprintw(2, 50, "Bruecke verboten -> kreuzt");
           }
-          // Zusstand der Bruecken in Abhaengigkeit vom Ist-Zustand veraendern
+          // Zustand der Bruecken in Abhaengigkeit vom Ist-Zustand veraendern
   if (rueck == 0) {
   switch (_allYBridges[y][j][_allYBridges[y][j].size()-1]) {
     case 0:
@@ -654,7 +703,7 @@ void Hashi::checkSolution() {
 }
 // ____________________________________________________________
 void Hashi::getSolution() {
-  // alleInseln in unordered map schreiben
+  // alleInseln in map schreiben fuer .solution
   // sortiert nach einfach, doppel
   // x1, y1, x2, y2
   std::vector<int> solVector;
@@ -675,7 +724,10 @@ void Hashi::getSolution() {
       solVector.push_back(yv.at(0) - 1);
       solVector.push_back(ym.first);
       solVector.push_back(yv.at(yv.size() - 2) + 1);
+      // Doppelbruecke --> 2x Klicken
+      for (int i = 0; i < 2; i++) {
       _solBridges[2].push_back(solVector);
+      }
       solVector.clear();
       }  
     }
@@ -683,21 +735,23 @@ void Hashi::getSolution() {
   for (auto& xm : _allYBridges) {
     for (auto& xv : xm.second) {
       if (xv.at(xv.size() -1) == 1) {
-      solVector.push_back(xm.first);
       solVector.push_back(xv.at(0) - 1);
       solVector.push_back(xm.first);
       solVector.push_back(xv.at(xv.size() - 2) + 1);
+      solVector.push_back(xm.first);
       
       _solBridges[1].push_back(solVector);
       solVector.clear();
       }  
       
       if (xv.at(xv.size() -1) == 2) {
-      solVector.push_back(xm.first);
       solVector.push_back(xv.at(0) - 1);
       solVector.push_back(xm.first);
       solVector.push_back(xv.at(xv.size() - 2) + 1);
+      solVector.push_back(xm.first);
+      for (int i = 0; i < 2; i++) { 
       _solBridges[2].push_back(solVector);
+      }
       solVector.clear();
       }  
     }
@@ -706,6 +760,8 @@ void Hashi::getSolution() {
 // ____________________________________________________________
 void Hashi::playGame() {
   initializeScreen();
+  solvePuzzle();
+  
   while (true) {
   int key  = getch();
   processUserInput(key);
